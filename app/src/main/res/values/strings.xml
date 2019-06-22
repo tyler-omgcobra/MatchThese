@@ -1,3 +1,6 @@
 <resources>
   <string name="app_name">MatchThese</string>
+
+  <string name="items_title">Items</string>
+  <string name="tabs_title">Tabs</string>
 </resources>
