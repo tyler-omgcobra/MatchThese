@@ -2,6 +2,8 @@ package org.omgcobra.matchthese
 
 import android.app.Application
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import org.omgcobra.matchthese.dao.AppDatabase
 
 class MatchTheseApplication: Application() {
@@ -15,10 +17,14 @@ class MatchTheseApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        db = Room.databaseBuilder(
-                applicationContext,
-                AppDatabase::class.java,
-                "appDatabase"
-        ).build()
+        db = AppDatabase.build(applicationContext)
+    }
+}
+
+class Migrate1To2: Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("""
+            ALTER TABLE ItemTagJoin 
+        """.trimIndent())
     }
 }

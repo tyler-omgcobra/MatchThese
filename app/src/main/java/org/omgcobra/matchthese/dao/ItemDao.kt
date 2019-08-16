@@ -24,11 +24,14 @@ interface ItemDao {
     fun loadItem(id: Int): Item
 
     @Query("""
-        SELECT *
+        SELECT Item.id, Item.name, Tag.id tagid, Tag.name tagname
         FROM Item
-            INNER JOIN ItemTagJoin
-            INNER JOIN Tag
+            LEFT OUTER JOIN ItemTagJoin
+            LEFT OUTER JOIN Tag
         GROUP BY Item.id
     """)
-    fun loadItemsWithTags(): LiveData<List<ItemWithTags>>
+    fun allItemsWithTags(): LiveData<List<ItemWithTags>>
+
+    @Query("DELETE FROM Item")
+    fun deleteAll()
 }

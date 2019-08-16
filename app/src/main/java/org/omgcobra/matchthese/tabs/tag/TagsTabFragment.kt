@@ -1,4 +1,4 @@
-package org.omgcobra.matchthese.tabs
+package org.omgcobra.matchthese.tabs.tag
 
 
 import android.os.Bundle
@@ -8,14 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import org.omgcobra.matchthese.MatchTheseApplication
 import org.omgcobra.matchthese.R
+import org.omgcobra.matchthese.tabs.TabFragment
 
 /**
  * A simple [Fragment] subclass.
  *
  */
-class TagsTabFragment : TabFragment() {
-    override val title: String = MatchTheseApplication.getInstance().getString(R.string.tags_tab_title)
-
+class TagsTabFragment(title: String) : TabFragment(title) {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment

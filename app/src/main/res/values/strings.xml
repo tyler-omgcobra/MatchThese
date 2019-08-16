@@ -3,4 +3,12 @@
 
   <string name="items_tab_title">Items</string>
   <string name="tags_tab_title">Tags</string>
+  <string name="add_btn_text">Add</string>
+  <string name="name">Name</string>
+  <string name="save">Save</string>
+  <string name="cancel">Cancel</string>
+  <string name="dialog_item_title">Item</string>
+    <string name="delete_item">Delete item</string>
+    <string name="delete_item_confirm">Delete this item?</string>
+  <string name="delete">Delete</string>
 </resources>
