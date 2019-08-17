@@ -7,7 +7,7 @@ import org.omgcobra.matchthese.model.Item
 import org.omgcobra.matchthese.model.ItemWithTags
 
 @Dao
-interface ItemWithTagsDao {
+interface ItemTagCompositeDao {
     @Query("""
         SELECT Item.id, Item.name, Tag.id tagid, Tag.name tagname
         FROM Item

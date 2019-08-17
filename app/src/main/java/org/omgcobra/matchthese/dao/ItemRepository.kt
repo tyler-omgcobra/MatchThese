@@ -10,7 +10,7 @@ import org.omgcobra.matchthese.model.Tag
 class ItemRepository {
     private val db = MatchTheseApplication.getDB()
     private val itemDao = db.itemDao()
-    private val itemWithTagsDao = db.itemWithTagsDao()
+    private val itemWithTagsDao = db.itemTagCompositeDao()
     private val tagDao = db.tagDao()
     private val itemTagJoinDao = db.itemTagJoinDao()
     private val allItems = itemDao.allItems()

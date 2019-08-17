@@ -22,7 +22,7 @@ class DBReadWriteTest {
     private lateinit var itemDao: ItemDao
     private lateinit var tagDao: TagDao
     private lateinit var itemTagJoinDao: ItemTagJoinDao
-    private lateinit var itemWithTagsDao: ItemWithTagsDao
+    private lateinit var itemTagCompositeDao: ItemTagCompositeDao
     private lateinit var db: AppDatabase
 
     @Before
@@ -31,7 +31,7 @@ class DBReadWriteTest {
         itemDao = db.itemDao()
         tagDao = db.tagDao()
         itemTagJoinDao = db.itemTagJoinDao()
-        itemWithTagsDao = db.itemWithTagsDao()
+        itemTagCompositeDao = db.itemTagCompositeDao()
     }
 
     @After
@@ -59,7 +59,7 @@ class DBReadWriteTest {
         checkJoin(item, tag)
 
         deleteTag(tag)
-        assertThat(itemWithTagsDao.loadItemWithTags(item.id).tagList as Collection<*>, `is`(empty()))
+        assertThat(itemTagCompositeDao.loadItemWithTags(item.id).tagList as Collection<*>, `is`(empty()))
         deleteItem(item)
     }
 
@@ -69,7 +69,7 @@ class DBReadWriteTest {
     }
 
     private fun checkJoin(item: Item, tag: Tag) {
-        val itemWithTags = itemWithTagsDao.loadItemWithTags(item.id)
+        val itemWithTags = itemTagCompositeDao.loadItemWithTags(item.id)
         assertThat(itemWithTags.item, equalTo(item))
         assertThat(itemWithTags.tagList, contains(tag.name))
     }
@@ -141,7 +141,7 @@ class DBReadWriteTest {
         val byName = itemDao.findItemsByName(name)
         assertThat(byName as Collection<*>, `is`(empty()))
 
-        assertThat(itemWithTagsDao.loadItemWithTags(item.id), nullValue())
+        assertThat(itemTagCompositeDao.loadItemWithTags(item.id), nullValue())
     }
 
     private fun deleteTag(tag: Tag) {

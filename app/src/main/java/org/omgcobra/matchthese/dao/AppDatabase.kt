@@ -13,7 +13,7 @@ import org.omgcobra.matchthese.model.Tag
 @Database(entities = [Item::class, ItemTagJoin::class, Tag::class], version = 4)
 abstract class AppDatabase: RoomDatabase() {
     abstract fun itemDao(): ItemDao
-    abstract fun itemWithTagsDao(): ItemWithTagsDao
+    abstract fun itemTagCompositeDao(): ItemTagCompositeDao
     abstract fun tagDao(): TagDao
     abstract fun itemTagJoinDao(): ItemTagJoinDao
 
