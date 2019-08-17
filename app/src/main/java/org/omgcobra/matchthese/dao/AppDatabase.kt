@@ -12,22 +12,73 @@ import org.omgcobra.matchthese.model.Tag
 
 @Database(entities = [Item::class, ItemTagJoin::class, Tag::class], version = 4)
 abstract class AppDatabase: RoomDatabase() {
+    abstract fun itemDao(): ItemDao
+    abstract fun itemWithTagsDao(): ItemWithTagsDao
+    abstract fun tagDao(): TagDao
+    abstract fun itemTagJoinDao(): ItemTagJoinDao
+
     companion object {
         fun build(context: Context): AppDatabase {
             return Room.databaseBuilder(context, AppDatabase::class.java, "appDatabase")
-                    .addMigrations(Migration1to2(), Migration2to3(), Migration3to4())
+                    .addMigrations(*migrations)
                     .build()
         }
 
         fun buildTest(context: Context): AppDatabase {
             return Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         }
-    }
 
-    abstract fun itemDao(): ItemDao
-    abstract fun itemWithTagsDao(): ItemWithTagsDao
-    abstract fun tagDao(): TagDao
-    abstract fun itemTagJoinDao(): ItemTagJoinDao
+        private val migrations = arrayOf(
+                object: DatabaseMigration(1, 2) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        recreateTable("ItemTagJoin", """
+                            CREATE TABLE IF NOT EXISTS ItemTagJoin(
+                                `tagid` INTEGER,
+                                `tagname` TEXT,
+                                `itemid` INTEGER NOT NULL,
+                                `itemname` TEXT NOT NULL,
+                                PRIMARY KEY(`itemid`),
+                                FOREIGN KEY(`tagid`) REFERENCES `Tag`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+                                FOREIGN KEY(`itemid`) REFERENCES `Item`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+                            )
+                        """, "tagid, tagname, itemid, itemname", database)
+                    }
+                },
+                object: DatabaseMigration(2, 3) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("CREATE UNIQUE INDEX `index_Item_id_name` ON `Item` (`id`, `name`)")
+                        database.execSQL("CREATE UNIQUE INDEX `index_Tag_id_name` ON `Tag` (`id`, `name`)")
+                        recreateTable("ItemTagJoin", """
+                            CREATE TABLE IF NOT EXISTS ItemTagJoin(
+                                `id` INTEGER NOT NULL,
+                                `tagname` TEXT,
+                                `tagid` INTEGER,
+                                `itemname` TEXT NOT NULL,
+                                `itemid` INTEGER NOT NULL,
+                                PRIMARY KEY(`itemid`),
+                                FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
+                                FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
+                            )
+                        """, "tagid, tagname, itemid, itemname", database)
+                    }
+                },
+                object: DatabaseMigration(3, 4) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        recreateTable("ItemTagJoin", """
+                            CREATE TABLE IF NOT EXISTS ItemTagJoin(
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `tagname` TEXT,
+                                `tagid` INTEGER,
+                                `itemname` TEXT NOT NULL,
+                                `itemid` INTEGER NOT NULL,
+                                FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
+                                FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
+                            )
+                        """, "tagid, tagname, itemid, itemname", database)
+                    }
+                }
+        )
+    }
 }
 
 abstract class DatabaseMigration(from: Int, to: Int): Migration(from, to) {
@@ -41,56 +92,5 @@ abstract class DatabaseMigration(from: Int, to: Int): Migration(from, to) {
             FROM $oldName
         """.trimIndent())
         database.execSQL("DROP TABLE $oldName")
-    }
-}
-
-class Migration1to2: DatabaseMigration(1, 2) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        recreateTable("ItemTagJoin", """
-                    CREATE TABLE IF NOT EXISTS ItemTagJoin(
-                        `tagid` INTEGER,
-                        `tagname` TEXT,
-                        `itemid` INTEGER NOT NULL,
-                        `itemname` TEXT NOT NULL,
-                        PRIMARY KEY(`itemid`),
-                        FOREIGN KEY(`tagid`) REFERENCES `Tag`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
-                        FOREIGN KEY(`itemid`) REFERENCES `Item`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
-                    )
-                """, "tagid, tagname, itemid, itemname", database)
-    }
-}
-
-class Migration2to3: DatabaseMigration(2, 3) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("CREATE UNIQUE INDEX `index_Item_id_name` ON `Item` (`id`, `name`)")
-        database.execSQL("CREATE UNIQUE INDEX `index_Tag_id_name` ON `Tag` (`id`, `name`)")
-        recreateTable("ItemTagJoin", """
-                    CREATE TABLE IF NOT EXISTS ItemTagJoin(
-                        `id` INTEGER NOT NULL,
-                        `tagname` TEXT,
-                        `tagid` INTEGER,
-                        `itemname` TEXT NOT NULL,
-                        `itemid` INTEGER NOT NULL,
-                        PRIMARY KEY(`itemid`),
-                        FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                        FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                    )
-                """, "tagid, tagname, itemid, itemname", database)
-    }
-}
-
-class Migration3to4: DatabaseMigration(3, 4) {
-    override fun migrate(database: SupportSQLiteDatabase) {
-        recreateTable("ItemTagJoin", """
-                    CREATE TABLE IF NOT EXISTS ItemTagJoin(
-                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        `tagname` TEXT,
-                        `tagid` INTEGER,
-                        `itemname` TEXT NOT NULL,
-                        `itemid` INTEGER NOT NULL,
-                        FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                        FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                    )
-                """, "tagid, tagname, itemid, itemname", database)
     }
 }

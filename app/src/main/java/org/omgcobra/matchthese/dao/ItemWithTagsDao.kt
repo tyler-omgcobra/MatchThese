@@ -25,5 +25,5 @@ interface ItemWithTagsDao {
         WHERE Item.id = :itemId
         GROUP BY Item.id
     """)
-fun loadItemWithTags(itemId: Long): ItemWithTags
+    fun loadItemWithTags(itemId: Long): ItemWithTags
 }
