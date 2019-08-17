@@ -2,30 +2,30 @@ package org.omgcobra.matchthese.model
 
 import androidx.room.*
 
-@Entity data class Item(val name: String) {
-    @PrimaryKey(autoGenerate = true) var id: Long = 0
-}
+abstract class AbstractEntity(@PrimaryKey(autoGenerate = true) var id: Long)
 
-@Entity data class Tag(
-        @PrimaryKey(autoGenerate = true) val id: Long,
-        val name: String
-)
+@Entity(indices = [Index(value = ["id", "name"], unique = true)])
+data class Item(var name: String): AbstractEntity(0L)
 
-//@Entity(primaryKeys = ["tagid", "itemid"],
-@Entity(primaryKeys = ["itemid"],
-        foreignKeys = [
+@Entity(indices = [Index(value = ["id", "name"], unique = true)])
+data class Tag(var name: String): AbstractEntity(0L)
+
+@Entity(foreignKeys = [
             ForeignKey(entity = Tag::class,
-                    parentColumns = ["id"],
-                    childColumns = ["tagid"]),
+                    parentColumns = ["id", "name"],
+                    childColumns = ["tagid", "tagname"],
+                    onDelete = ForeignKey.CASCADE,
+                    onUpdate = ForeignKey.CASCADE),
             ForeignKey(entity = Item::class,
-                    parentColumns = ["id"],
-                    childColumns = ["itemid"])
-        ]/*,
-        indices = [Index(unique = true, value = ["itemid", "tagid"])]*/)
+                    parentColumns = ["id", "name"],
+                    childColumns = ["itemid", "itemname"],
+                    onDelete = ForeignKey.CASCADE,
+                    onUpdate = ForeignKey.CASCADE)
+        ])
 data class ItemTagJoin(
-        @Embedded(prefix = "tag") val tag: Tag?,
-        @Embedded(prefix = "item") val item: Item
-)
+        @Embedded(prefix = "item") val item: Item,
+        @Embedded(prefix = "tag") val tag: Tag?
+): AbstractEntity(0L)
 
 data class ItemWithTags(
         @Embedded val item: Item

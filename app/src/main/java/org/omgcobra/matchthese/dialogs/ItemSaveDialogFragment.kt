@@ -8,6 +8,7 @@ import androidx.fragment.app.DialogFragment
 import org.jetbrains.anko.doAsync
 import org.omgcobra.matchthese.MatchTheseApplication
 import org.omgcobra.matchthese.R
+import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.model.Item
 
 class ItemSaveDialogFragment: DialogFragment() {
@@ -48,8 +49,6 @@ class ItemSaveDialogFragment: DialogFragment() {
             return
         }
 
-        doAsync {
-            MatchTheseApplication.getDB().itemDao().insertItems(Item(name))
-        }
+        ItemRepository().insertItem(Item(name))
     }
 }
