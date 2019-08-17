@@ -8,24 +8,19 @@ import org.omgcobra.matchthese.model.ItemTagJoin
 import org.omgcobra.matchthese.model.Tag
 
 class ItemRepository {
-    private val db = MatchTheseApplication.getDB()
-    private val itemDao = db.itemDao()
-    private val itemWithTagsDao = db.itemTagCompositeDao()
-    private val tagDao = db.tagDao()
-    private val itemTagJoinDao = db.itemTagJoinDao()
-    private val allItems = itemDao.allItems()
-    private val allItemsWithTags = itemWithTagsDao.allItemsWithTags()
-    private val allTags = tagDao.allTags()
+    companion object {
+        val db = MatchTheseApplication.getDB()
+        private val itemWithTagsDao = db.itemTagCompositeDao()
+        private val allItemsWithTags = itemWithTagsDao.allItemsWithTags()
 
-    fun getItems() = allItems
-    fun getItemsWithTags() = allItemsWithTags
-    fun getTags() = allTags
-    fun addTagToItem(item: Item, tag: Tag): AsyncTask<ItemTagJoin, Void, Void> = InsertAsyncTask(itemTagJoinDao).execute(ItemTagJoin(item, tag))
-    fun removeItemTagJoin(itemTagJoin: ItemTagJoin): AsyncTask<ItemTagJoin, Void, Void> = DeleteAsyncTask(itemTagJoinDao).execute(itemTagJoin)
-    fun insertItem(item: Item): AsyncTask<Item, Void, Void> = InsertAsyncTask(itemDao).execute(item)
-    fun updateItem(item: Item): AsyncTask<Item, Void, Void> = UpdateAsyncTask(itemDao).execute(item)
-    fun deleteItem(item: Item): AsyncTask<Item, Void, Void> = DeleteAsyncTask(itemDao).execute(item)
-    fun deleteAllItems(): AsyncTask<Void, Void, Void> = DeleteAllAsyncTask(itemDao).execute()
+        fun getItemsWithTags() = allItemsWithTags
+        fun addTagToItem(item: Item, tag: Tag) = insert(ItemTagJoin(item, tag))
+        inline fun <reified T: AbstractEntity> getAll() = db.dao(T::class).getAll()
+        inline fun <reified T: AbstractEntity> insert(item: T) = InsertAsyncTask(db.dao(T::class)).execute(item)!!
+        inline fun <reified T: AbstractEntity> update(item: T) = UpdateAsyncTask(db.dao(T::class)).execute(item)!!
+        inline fun <reified T: AbstractEntity> delete(item: T) = DeleteAsyncTask(db.dao(T::class)).execute(item)!!
+        inline fun <reified T: AbstractEntity> deleteAll() = DeleteAllAsyncTask(db.dao(T::class)).execute()!!
+    }
 }
 
 class InsertAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
@@ -49,7 +44,7 @@ class DeleteAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): Async
     }
 }
 
-class DeleteAllAsyncTask(private val dao: ItemDao): AsyncTask<Void, Void, Void>() {
+class DeleteAllAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): AsyncTask<Void, Void, Void>() {
     override fun doInBackground(vararg items: Void): Void? {
         dao.deleteAll()
         return null

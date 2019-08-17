@@ -18,6 +18,5 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:onClick="onAddBtnClick"
-        app:backgroundTint="@color/color_primary"
         app:srcCompat="@drawable/ic_add_black_24dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

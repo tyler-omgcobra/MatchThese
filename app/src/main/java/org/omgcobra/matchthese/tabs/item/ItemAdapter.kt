@@ -1,24 +1,15 @@
 package org.omgcobra.matchthese.tabs.item
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import androidx.recyclerview.widget.RecyclerView
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.ItemTouchHelper
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.model.ItemWithTags
+import org.omgcobra.matchthese.model.Tag
 
 class ItemAdapter(internal val context: Context) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
 
@@ -27,7 +18,7 @@ class ItemAdapter(internal val context: Context) : RecyclerView.Adapter<ItemAdap
     private var deletedItemPosition: Int? = null
 
     fun setItemList(itemList: List<ItemWithTags>) {
-        this.dataSet = itemList
+        this.dataSet = itemList.sorted()
         notifyDataSetChanged()
     }
 
@@ -36,10 +27,18 @@ class ItemAdapter(internal val context: Context) : RecyclerView.Adapter<ItemAdap
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = dataSet[position]
-        holder.itemText.text = item.item.name
+        val itemWithTags = dataSet[position]
+        holder.itemText.text = itemWithTags.item.name
+        holder.itemTags.text = itemWithTags.tagList.joinToString { it }
         holder.itemView.setOnClickListener {
-            Toast.makeText(context, "clicked " + item.item.name, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "clicked " + itemWithTags.item.name, Toast.LENGTH_SHORT).show()
+            val tag = Tag("cool")
+            if (ItemRepository.getAll<Tag>().value.orEmpty().isEmpty()) {
+                ItemRepository.insert(tag).get()
+            }
+            if (!itemWithTags.tagList.contains("cool")) {
+                ItemRepository.addTagToItem(itemWithTags.item, tag)
+            }
         }
     }
 
@@ -48,11 +47,12 @@ class ItemAdapter(internal val context: Context) : RecyclerView.Adapter<ItemAdap
     fun deleteItem(position: Int) {
         deletedItem = dataSet[position]
         deletedItemPosition = position
-        ItemRepository().deleteItem(dataSet[position].item)
+        ItemRepository.delete(dataSet[position].item)
     }
 
     class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemText: TextView = itemView.findViewById(R.id.item_name)
+        val itemTags: TextView = itemView.findViewById(R.id.item_tags)
     }
 
 }

@@ -8,7 +8,7 @@ import org.omgcobra.matchthese.model.Tag
 @Dao
 interface TagDao: AbstractDao<Tag> {
     @Query("SELECT * FROM Tag")
-    fun allTags(): LiveData<List<Tag>>
+    override fun getAll(): LiveData<List<Tag>>
 
     @Query("SELECT * FROM Tag WHERE id = :id")
     override fun load(id: Long): Tag

@@ -1,9 +1,12 @@
 package org.omgcobra.matchthese.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.omgcobra.matchthese.model.AbstractEntity
 
 interface AbstractDao<T: AbstractEntity> {
+
+    fun getAll(): LiveData<List<T>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(item: T): Long

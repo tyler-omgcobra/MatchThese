@@ -13,8 +13,6 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabBackground="@color/color_primary"
-            app:tabIndicatorColor="@color/color_primary" />
+            android:layout_height="wrap_content" />
     </org.omgcobra.matchthese.tabs.NoSwipeViewPager>
 </androidx.constraintlayout.widget.ConstraintLayout>

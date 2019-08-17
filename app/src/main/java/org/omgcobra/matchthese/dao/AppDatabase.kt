@@ -6,16 +6,23 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import org.omgcobra.matchthese.model.Item
-import org.omgcobra.matchthese.model.ItemTagJoin
-import org.omgcobra.matchthese.model.Tag
+import org.omgcobra.matchthese.model.*
+import kotlin.reflect.KClass
 
 @Database(entities = [Item::class, ItemTagJoin::class, Tag::class], version = 4)
-abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun itemTagCompositeDao(): ItemTagCompositeDao
     abstract fun tagDao(): TagDao
     abstract fun itemTagJoinDao(): ItemTagJoinDao
+    fun <T : AbstractEntity> dao(klass: KClass<T>): AbstractDao<T> {
+        return (when (klass) {
+            Item::class -> itemDao()
+            Tag::class -> tagDao()
+            ItemTagJoin::class -> itemTagJoinDao()
+            else -> throw IllegalArgumentException()
+        }) as AbstractDao<T>
+    }
 
     companion object {
         fun build(context: Context): AppDatabase {

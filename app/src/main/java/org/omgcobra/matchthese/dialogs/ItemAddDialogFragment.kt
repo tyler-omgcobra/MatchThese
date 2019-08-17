@@ -14,11 +14,12 @@ class ItemAddDialogFragment: DialogFragment() {
         val activity = requireActivity()
 
         return AlertDialog.Builder(activity)
+                .setTitle(R.string.add_item_title)
                 .setView(activity.layoutInflater.inflate(R.layout.fragment_edit_item, null))
                 .setPositiveButton(R.string.add_btn_text) { dialog, _ ->
                     dialog as Dialog
                     val editText: EditText = dialog.findViewById(R.id.item_edit_name)
-                    ItemRepository().insertItem(Item(editText.text.toString()))
+                    ItemRepository.insert(Item(editText.text.toString()))
                     dialog.dismiss()
                 }
                 .setNegativeButton(R.string.cancel) { dialog, _ ->
