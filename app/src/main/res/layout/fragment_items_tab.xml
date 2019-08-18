@@ -4,10 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".tabs.item.ItemsTabFragment">
+    tools:context=".tabs.item.ItemWithTagsTabFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list"
+        android:id="@+id/item_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -17,6 +17,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:onClick="onAddBtnClick"
+        android:onClick="onAddItemBtnClick"
         app:srcCompat="@drawable/ic_add_black_24dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -6,16 +6,12 @@ abstract class AbstractEntity(@PrimaryKey(autoGenerate = true) var id: Long)
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
 data class Item(var name: String): AbstractEntity(0L), Comparable<Item> {
-    override fun compareTo(other: Item): Int {
-        return this.name.compareTo(other.name, true)
-    }
+    override fun compareTo(other: Item) = this.name.compareTo(other.name, true)
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
 data class Tag(var name: String): AbstractEntity(0L), Comparable<Tag> {
-    override fun compareTo(other: Tag): Int {
-        return this.name.compareTo(other.name)
-    }
+    override fun compareTo(other: Tag) = this.name.compareTo(other.name, true)
 }
 
 @Entity(foreignKeys = [
@@ -29,6 +25,9 @@ data class Tag(var name: String): AbstractEntity(0L), Comparable<Tag> {
                     childColumns = ["itemid", "itemname"],
                     onDelete = ForeignKey.CASCADE,
                     onUpdate = ForeignKey.CASCADE)
+        ],
+        indices = [
+            Index(value = ["itemid", "itemname", "tagid", "tagname"], unique = true)
         ])
 data class ItemTagJoin(
         @Embedded(prefix = "item") val item: Item,

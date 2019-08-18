@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 4,
-    "identityHash": "d4cae9d891376b10e356e4c472ec7437",
+    "version": 6,
+    "identityHash": "e73e2f1b493e8f8cd4185de3fa030717",
     "entities": [
       {
         "tableName": "Item",
@@ -83,22 +83,15 @@
         },
         "indices": [
           {
-            "name": "index_ItemTagJoin_itemid_itemname",
+            "name": "index_ItemTagJoin_itemid_itemname_tagid_tagname",
             "unique": true,
             "columnNames": [
               "itemid",
-              "itemname"
-            ],
-            "createSql": "CREATE UNIQUE INDEX `index_ItemTagJoin_itemid_itemname` ON `${TABLE_NAME}` (`itemid`, `itemname`)"
-          },
-          {
-            "name": "index_ItemTagJoin_tagid_tagname",
-            "unique": true,
-            "columnNames": [
+              "itemname",
               "tagid",
               "tagname"
             ],
-            "createSql": "CREATE UNIQUE INDEX `index_ItemTagJoin_tagid_tagname` ON `${TABLE_NAME}` (`tagid`, `tagname`)"
+            "createSql": "CREATE UNIQUE INDEX `index_ItemTagJoin_itemid_itemname_tagid_tagname` ON `${TABLE_NAME}` (`itemid`, `itemname`, `tagid`, `tagname`)"
           }
         ],
         "foreignKeys": [
@@ -169,7 +162,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"d4cae9d891376b10e356e4c472ec7437\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e73e2f1b493e8f8cd4185de3fa030717\")"
     ]
   }
 }

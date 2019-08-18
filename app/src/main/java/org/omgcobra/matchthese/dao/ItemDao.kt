@@ -18,5 +18,5 @@ interface ItemDao: AbstractDao<Item> {
     override fun deleteAll()
 
     @Query("SELECT * FROM Item WHERE name = :name")
-    fun findItemsByName(name: String): List<Item>
+    fun getByName(name: String): Item?
 }

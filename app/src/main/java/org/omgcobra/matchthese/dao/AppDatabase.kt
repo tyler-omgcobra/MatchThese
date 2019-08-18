@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import org.omgcobra.matchthese.model.*
 import kotlin.reflect.KClass
 
-@Database(entities = [Item::class, ItemTagJoin::class, Tag::class], version = 4)
+@Database(entities = [Item::class, ItemTagJoin::class, Tag::class], version = 6)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDao(): ItemDao
     abstract fun itemTagCompositeDao(): ItemTagCompositeDao
@@ -82,6 +82,19 @@ abstract class AppDatabase : RoomDatabase() {
                                 FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
                             )
                         """, "tagid, tagname, itemid, itemname", database)
+                    }
+                },
+                object: DatabaseMigration(4, 5) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_itemid_itemname ON ItemTagJoin(itemid, itemname)")
+                        database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_tagid_tagname ON ItemTagJoin(tagid, tagname)")
+                    }
+                },
+                object: DatabaseMigration(5, 6) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("DROP INDEX index_ItemTagJoin_itemid_itemname")
+                        database.execSQL("DROP INDEX index_ItemTagJoin_tagid_tagname")
+                        database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_itemid_itemname_tagid_tagname ON ItemTagJoin(itemid, itemname, tagid, tagname)")
                     }
                 }
         )

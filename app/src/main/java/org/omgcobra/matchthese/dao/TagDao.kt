@@ -13,9 +13,9 @@ interface TagDao: AbstractDao<Tag> {
     @Query("SELECT * FROM Tag WHERE id = :id")
     override fun load(id: Long): Tag
 
-    @Query("SELECT * FROM Tag WHERE name = :name")
-    fun findTagsByName(name: String): List<Tag>
-
     @Query("DELETE FROM Tag")
     override fun deleteAll()
+
+    @Query("SELECT * FROM Tag WHERE name = :name")
+    fun getByName(name: String): Tag?
 }

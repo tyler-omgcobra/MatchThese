@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tabs.tag.TagsTabFragment">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".tabs.tag.TagWithItemsTabFragment">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tag_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/tags_tab_title"
-        android:textSize="@dimen/text_normal" />
+        android:layout_height="match_parent" />
 
-</FrameLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floating_action_button_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:onClick="onAddTagBtnClick"
+        app:srcCompat="@drawable/ic_add_black_24dp" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

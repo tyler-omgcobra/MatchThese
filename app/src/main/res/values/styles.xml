@@ -18,4 +18,13 @@
       <!--<item name="android:minHeight">26dp</item>-->
     </style>
 
+    <style name="tag_with_items">
+      <!--<item name="android:layout_width">match_parent</item>-->
+      <!--<item name="android:layout_height">26dp</item>-->
+      <!--<item name="android:textSize">24sp</item>-->
+      <!--<item name="android:textStyle">bold</item>-->
+      <!--<item name="android:layout_margin">12dp</item>-->
+      <!--<item name="android:minHeight">26dp</item>-->
+    </style>
+
 </resources>

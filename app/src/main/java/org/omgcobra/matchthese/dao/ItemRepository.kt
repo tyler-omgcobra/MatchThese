@@ -2,19 +2,18 @@ package org.omgcobra.matchthese.dao
 
 import android.os.AsyncTask
 import org.omgcobra.matchthese.MatchTheseApplication
-import org.omgcobra.matchthese.model.AbstractEntity
-import org.omgcobra.matchthese.model.Item
-import org.omgcobra.matchthese.model.ItemTagJoin
-import org.omgcobra.matchthese.model.Tag
+import org.omgcobra.matchthese.model.*
 
 class ItemRepository {
     companion object {
         val db = MatchTheseApplication.getDB()
-        private val itemWithTagsDao = db.itemTagCompositeDao()
-        private val allItemsWithTags = itemWithTagsDao.allItemsWithTags()
+        private val itemTagCompositeDao = db.itemTagCompositeDao()
+        private val allItemsWithTags = itemTagCompositeDao.allItemsWithTags()
+        private val allTagsWithItems = itemTagCompositeDao.allTagsWithItems()
 
         fun getItemsWithTags() = allItemsWithTags
-        fun addTagToItem(item: Item, tag: Tag) = insert(ItemTagJoin(item, tag))
+        fun getTagsWithItems() = allTagsWithItems
+        fun ensureTagOnItem(item: ItemWithTags, tagName: String) = TagItemTask(db.itemTagJoinDao(), db.tagDao(), tagName).execute(item)
         inline fun <reified T: AbstractEntity> getAll() = db.dao(T::class).getAll()
         inline fun <reified T: AbstractEntity> insert(item: T) = InsertAsyncTask(db.dao(T::class)).execute(item)!!
         inline fun <reified T: AbstractEntity> update(item: T) = UpdateAsyncTask(db.dao(T::class)).execute(item)!!
@@ -49,4 +48,22 @@ class DeleteAllAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): As
         dao.deleteAll()
         return null
     }
+}
+
+class TagItemTask(private val itemTagJoinDao: ItemTagJoinDao, private val tagDao: TagDao, private val tagName: String): AsyncTask<ItemWithTags, Void, Void>() {
+    override fun doInBackground(vararg itemsWithTags: ItemWithTags): Void? {
+        val tag = tagDao.getByName(tagName) ?: Tag(tagName)
+
+        if (tag.id == 0L) {
+            tag.id = tagDao.insert(tag)
+        }
+
+        itemsWithTags.forEach {
+            if (!it.tagList.contains(tagName)) {
+                itemTagJoinDao.insert(ItemTagJoin(it.item, tag))
+            }
+        }
+        return null
+    }
+
 }

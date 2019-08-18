@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_item_item_with_tags"
-    style="@style/item_with_tags"
+    android:id="@+id/list_item_tag_with_items"
+    style="@style/tag_with_items"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
-        android:id="@+id/item_name"
+        android:id="@+id/tag_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
-        android:id="@+id/item_tags"
+        android:id="@+id/tag_items"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
