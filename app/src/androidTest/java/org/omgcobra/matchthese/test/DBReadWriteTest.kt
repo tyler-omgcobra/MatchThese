@@ -60,6 +60,7 @@ class DBReadWriteTest {
 
         deleteTag(tag)
         assertThat(itemTagCompositeDao.loadItemWithTags(item.id).tagList as Collection<*>, `is`(empty()))
+        assertThat(itemTagCompositeDao.loadTagWithItems(tag.id), nullValue())
         deleteItem(item)
     }
 
@@ -94,7 +95,7 @@ class DBReadWriteTest {
         val byId = itemDao.load(item.id)
         assertThat(byId, equalTo(item))
 
-        val byName = itemDao.findItemsByName(item.name)[0]
+        val byName = itemDao.getByName(item.name)
         assertThat(byName, equalTo(item))
     }
 
@@ -102,7 +103,7 @@ class DBReadWriteTest {
         val byId = tagDao.load(tag.id)
         assertThat(byId, equalTo(tag))
 
-        val byName = tagDao.findTagsByName(tag.name)[0]
+        val byName = tagDao.getByName(tag.name)
         assertThat(byName, equalTo(tag))
     }
 
@@ -114,8 +115,8 @@ class DBReadWriteTest {
         val byId = itemDao.load(item.id)
         assertThat(byId, equalTo(item))
 
-        val byName = itemDao.findItemsByName(oldName)
-        assertThat(byName as Collection<*>, `is`(empty()))
+        val byName = itemDao.getByName(oldName)
+        assertThat(byName, nullValue())
     }
 
     private fun updateTag(tag: Tag, name: String) {
@@ -126,8 +127,8 @@ class DBReadWriteTest {
         val byId = tagDao.load(tag.id)
         assertThat(byId, equalTo(tag))
 
-        val byName = tagDao.findTagsByName(oldName)
-        assertThat(byName as Collection<*>, `is`(empty()))
+        val byName = tagDao.getByName(oldName)
+        assertThat(byName, nullValue())
     }
 
     private fun deleteItem(item: Item) {
@@ -138,8 +139,8 @@ class DBReadWriteTest {
         val byId = itemDao.load(id)
         assertThat(byId, nullValue())
 
-        val byName = itemDao.findItemsByName(name)
-        assertThat(byName as Collection<*>, `is`(empty()))
+        val byName = itemDao.getByName(name)
+        assertThat(byName, nullValue())
 
         assertThat(itemTagCompositeDao.loadItemWithTags(item.id), nullValue())
     }
@@ -152,7 +153,7 @@ class DBReadWriteTest {
         val byId = tagDao.load(id)
         assertThat(byId, nullValue())
 
-        val byName = tagDao.findTagsByName(name)
-        assertThat(byName as Collection<*>, `is`(empty()))
+        val byName = tagDao.getByName(name)
+        assertThat(byName, nullValue())
     }
 }
