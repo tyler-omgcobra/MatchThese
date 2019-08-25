@@ -3,10 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/tab_host">
+    app:startDestination="@id/itemWithTagsFragment">
 
     <fragment
-        android:id="@+id/tab_host"
-        android:name="org.omgcobra.matchthese.tabs.TabHostFragment"
-        tools:layout="@layout/tab_host"/>
+        android:id="@+id/itemWithTagsFragment"
+        android:name="org.omgcobra.matchthese.fragments.item.ItemWithTagsFragment"
+        android:label="@string/items_title"
+        tools:layout="@layout/fragment_items_view" />
+    <fragment
+        android:id="@+id/tagWithItemsFragment"
+        android:name="org.omgcobra.matchthese.fragments.tag.TagWithItemsFragment"
+        android:label="@string/tags_title"
+        tools:layout="@layout/fragment_tags_view" />
 </navigation>

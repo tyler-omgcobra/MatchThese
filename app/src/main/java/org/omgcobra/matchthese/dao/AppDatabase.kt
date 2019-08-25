@@ -25,18 +25,17 @@ abstract class AppDatabase : RoomDatabase() {
     }
 
     companion object {
-        fun build(context: Context): AppDatabase {
-            return Room.databaseBuilder(context, AppDatabase::class.java, "appDatabase")
-                    .addMigrations(*migrations)
-                    .build()
-        }
+        fun build(context: Context) = Room
+                .databaseBuilder(context, AppDatabase::class.java, "appDatabase")
+                .addMigrations(*migrations)
+                .build()
 
-        fun buildTest(context: Context): AppDatabase {
-            return Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
-        }
+        fun buildTest(context: Context) = Room
+                .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
+                .build()
 
         private val migrations = arrayOf(
-                object: DatabaseMigration(1, 2) {
+                object : DatabaseMigration(1, 2) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         recreateTable("ItemTagJoin", """
                             CREATE TABLE IF NOT EXISTS ItemTagJoin(
@@ -51,7 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
                         """, "tagid, tagname, itemid, itemname", database)
                     }
                 },
-                object: DatabaseMigration(2, 3) {
+                object : DatabaseMigration(2, 3) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         database.execSQL("CREATE UNIQUE INDEX `index_Item_id_name` ON `Item` (`id`, `name`)")
                         database.execSQL("CREATE UNIQUE INDEX `index_Tag_id_name` ON `Tag` (`id`, `name`)")
@@ -69,7 +68,7 @@ abstract class AppDatabase : RoomDatabase() {
                         """, "tagid, tagname, itemid, itemname", database)
                     }
                 },
-                object: DatabaseMigration(3, 4) {
+                object : DatabaseMigration(3, 4) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         recreateTable("ItemTagJoin", """
                             CREATE TABLE IF NOT EXISTS ItemTagJoin(
@@ -84,13 +83,13 @@ abstract class AppDatabase : RoomDatabase() {
                         """, "tagid, tagname, itemid, itemname", database)
                     }
                 },
-                object: DatabaseMigration(4, 5) {
+                object : DatabaseMigration(4, 5) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_itemid_itemname ON ItemTagJoin(itemid, itemname)")
                         database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_tagid_tagname ON ItemTagJoin(tagid, tagname)")
                     }
                 },
-                object: DatabaseMigration(5, 6) {
+                object : DatabaseMigration(5, 6) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         database.execSQL("DROP INDEX index_ItemTagJoin_itemid_itemname")
                         database.execSQL("DROP INDEX index_ItemTagJoin_tagid_tagname")
@@ -101,7 +100,7 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-abstract class DatabaseMigration(from: Int, to: Int): Migration(from, to) {
+abstract class DatabaseMigration(from: Int, to: Int) : Migration(from, to) {
     protected fun recreateTable(tableName: String, createStatement: String, columns: String, database: SupportSQLiteDatabase) {
         val oldName = tableName + "Old"
         database.execSQL("ALTER TABLE $tableName RENAME TO $oldName")

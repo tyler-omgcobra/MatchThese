@@ -1,4 +1,4 @@
-package org.omgcobra.matchthese.tabs.tag
+package org.omgcobra.matchthese.fragments.tag
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
@@ -18,11 +18,11 @@ class TagWithItemsAdapter(context: Context) : AbstractComparableAdapter<TagWithI
     }
 
     override fun onBindViewHolder(holder: TagWithItemsViewHolder, position: Int) {
-        val itemWithTags = dataSet[position]
-        holder.itemText.text = itemWithTags.tag.name
-        holder.itemTags.text = itemWithTags.itemList.joinToString { it }
+        val tagWithItems = dataSet[position]
+        holder.itemText.text = tagWithItems.tag.name
+        holder.itemTags.text = tagWithItems.itemList.sorted().joinToString { it }
         holder.itemView.setOnClickListener {
-            Toast.makeText(context, "clicked " + itemWithTags.tag.name, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "clicked " + tagWithItems.tag.name, Toast.LENGTH_SHORT).show()
         }
     }
 

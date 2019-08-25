@@ -11,12 +11,10 @@ abstract class AbstractComparableAdapter<T: Comparable<T>, VH: RecyclerView.View
             notifyDataSetChanged()
         }
     protected var deletedItem: T? = null
-    protected var deletedItemPosition: Int? = null
 
     override fun getItemCount(): Int = dataSet.size
 
     open fun delete(position: Int) {
         deletedItem = dataSet[position]
-        deletedItemPosition = position
     }
 }

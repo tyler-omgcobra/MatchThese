@@ -1,4 +1,4 @@
-package org.omgcobra.matchthese.tabs
+package org.omgcobra.matchthese.fragments
 
 import android.content.Context
 import android.util.AttributeSet

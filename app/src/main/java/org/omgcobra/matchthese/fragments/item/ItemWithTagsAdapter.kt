@@ -1,4 +1,4 @@
-package org.omgcobra.matchthese.tabs.item
+package org.omgcobra.matchthese.fragments.item
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView

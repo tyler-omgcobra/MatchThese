@@ -3,28 +3,23 @@
   <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     <!-- Customize your theme here. -->
-    <!--<item name="colorPrimary">@color/color_primary</item>-->
-    <!--<item name="android:textColorPrimary">@color/text_color_primary</item>-->
-    <!--<item name="android:editTextBackground">@color/color_primary_dark</item>-->
-    <!--<item name="colorPrimaryDark">@color/color_primary_dark</item>-->
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
   </style>
 
-    <style name="item_with_tags">
-      <!--<item name="android:layout_width">match_parent</item>-->
-      <!--<item name="android:layout_height">26dp</item>-->
-      <!--<item name="android:textSize">24sp</item>-->
-      <!--<item name="android:textStyle">bold</item>-->
-      <!--<item name="android:layout_margin">12dp</item>-->
-      <!--<item name="android:minHeight">26dp</item>-->
-    </style>
+  <style name="item_view">
+    <item name="android:minHeight">36sp</item>
+  </style>
 
-    <style name="tag_with_items">
-      <!--<item name="android:layout_width">match_parent</item>-->
-      <!--<item name="android:layout_height">26dp</item>-->
-      <!--<item name="android:textSize">24sp</item>-->
-      <!--<item name="android:textStyle">bold</item>-->
-      <!--<item name="android:layout_margin">12dp</item>-->
-      <!--<item name="android:minHeight">26dp</item>-->
-    </style>
+  <style name="item_view.main_content">
+    <item name="android:textSize">24sp</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+
+  <style name="item_view.sub_content">
+    <item name="android:textSize">18sp</item>
+    <item name="android:textStyle">italic</item>
+    <item name="android:layout_marginLeft">18sp</item>
+  </style>
 
 </resources>

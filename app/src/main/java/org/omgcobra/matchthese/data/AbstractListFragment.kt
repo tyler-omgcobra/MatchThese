@@ -1,9 +1,8 @@
-package org.omgcobra.matchthese.tabs
+package org.omgcobra.matchthese.data
 
 import androidx.fragment.app.Fragment
-import org.omgcobra.matchthese.data.AbstractComparableAdapter
 
-abstract class TabFragment<T: Comparable<T>, A: AbstractComparableAdapter<T, *>>(var title: String = ""): Fragment() {
+abstract class AbstractListFragment<T: Comparable<T>, A: AbstractComparableAdapter<T, *>>: Fragment() {
     protected val itemList = ArrayList<T>()
     protected abstract var adapter: A
 
@@ -13,5 +12,4 @@ abstract class TabFragment<T: Comparable<T>, A: AbstractComparableAdapter<T, *>>
 
         adapter.dataSet = itemList
     }
-
 }

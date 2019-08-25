@@ -1,4 +1,4 @@
-package org.omgcobra.matchthese.tabs.tag
+package org.omgcobra.matchthese.fragments.tag
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

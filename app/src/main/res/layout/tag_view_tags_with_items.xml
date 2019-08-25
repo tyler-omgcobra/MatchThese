@@ -2,17 +2,21 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/list_item_tag_with_items"
-    style="@style/tag_with_items"
+    style="@style/item_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
     <TextView
         android:id="@+id/tag_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/item_view.main_content"
+        />
     <TextView
         android:id="@+id/tag_items"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        style="@style/item_view.sub_content"
+        />
 
 </LinearLayout>
