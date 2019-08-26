@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/list_item_tag_with_items"
-    style="@style/item_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="?listPreferredItemHeight"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
+
     <TextView
         android:id="@+id/tag_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         style="@style/item_view.main_content"
-        />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/tag_items"
+        app:layout_constraintRight_toLeftOf="@id/handle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tag_items"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         style="@style/item_view.sub_content"
-        />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toLeftOf="@id/handle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tag_name" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/handle"
+        android:layout_width="?listPreferredItemHeight"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/drag_handle"
+        android:scaleType="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_drag_handle_black_24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

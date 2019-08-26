@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.data.AbstractListFragment
@@ -31,6 +32,7 @@ class ItemWithTagsFragment: AbstractListFragment<ItemWithTags, ItemWithTagsAdapt
         val context = rootView.context
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.item_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         adapter = ItemWithTagsAdapter(context)
         setListData(itemList)
         recyclerView.adapter = adapter

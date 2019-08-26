@@ -1,6 +1,7 @@
 package org.omgcobra.matchthese
 
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +14,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import org.omgcobra.matchthese.dialogs.ItemAddDialogFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var toolbar: Toolbar
@@ -26,6 +26,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
 
         setupNavigation()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.activity_bar, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
     private fun setupNavigation() {
@@ -57,9 +62,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawerLayout.closeDrawers()
 
-        val id = menuItem.itemId
-
-        when (id) {
+        when (menuItem.itemId) {
             R.id.menu_items -> navController.navigate(R.id.itemWithTagsFragment)
             R.id.menu_tags -> navController.navigate(R.id.tagWithItemsFragment)
         }
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun onAddItemBtnClick(view: View) {
-        ItemAddDialogFragment().show(supportFragmentManager, "add_item")
+        navController.navigate(R.id.edit_item)
     }
 
     fun onAddTagBtnClick(view: View) {

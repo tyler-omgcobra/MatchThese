@@ -1,8 +1,9 @@
 package org.omgcobra.matchthese.model
 
 import androidx.room.*
+import java.io.Serializable
 
-abstract class AbstractEntity(@PrimaryKey(autoGenerate = true) var id: Long)
+abstract class AbstractEntity(@PrimaryKey(autoGenerate = true) var id: Long): Serializable
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
 data class Item(var name: String): AbstractEntity(0L), Comparable<Item> {
@@ -36,7 +37,7 @@ data class ItemTagJoin(
 
 data class ItemWithTags(
         @Embedded val item: Item
-): Comparable<ItemWithTags> {
+): Comparable<ItemWithTags>, Serializable {
     @Relation(
             parentColumn = "id",
             entityColumn = "itemid",
@@ -51,7 +52,7 @@ data class ItemWithTags(
 
 data class TagWithItems(
         @Embedded val tag: Tag
-): Comparable<TagWithItems> {
+): Comparable<TagWithItems>, Serializable {
     @Relation(
             parentColumn = "id",
             entityColumn = "tagid",

@@ -1,11 +1,13 @@
 package org.omgcobra.matchthese.fragments.item
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
+import androidx.core.os.bundleOf
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.AbstractComparableAdapter
@@ -14,7 +16,8 @@ import org.omgcobra.matchthese.model.ItemWithTags
 class ItemWithTagsAdapter(context: Context) : AbstractComparableAdapter<ItemWithTags, ItemWithTagsAdapter.ItemWithTagsViewHolder>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemWithTagsViewHolder {
-        return ItemWithTagsViewHolder(View.inflate(context, R.layout.item_view_item_with_tags, null))
+        val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        return ItemWithTagsViewHolder(inflater.inflate(R.layout.item_view_item_with_tags, parent, false))
     }
 
     override fun onBindViewHolder(holder: ItemWithTagsViewHolder, position: Int) {
@@ -22,8 +25,7 @@ class ItemWithTagsAdapter(context: Context) : AbstractComparableAdapter<ItemWith
         holder.itemText.text = itemWithTags.item.name
         holder.itemTags.text = itemWithTags.tagList.joinToString { it }
         holder.itemView.setOnClickListener {
-            Toast.makeText(context, "clicked " + itemWithTags.item.name, Toast.LENGTH_SHORT).show()
-            ItemRepository.ensureTagOnItem(itemWithTags, "cool")
+            it.findNavController().navigate(R.id.edit_item, bundleOf("itemWithTags" to itemWithTags))
         }
     }
 

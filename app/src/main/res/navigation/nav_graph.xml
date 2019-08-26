@@ -9,10 +9,18 @@
         android:id="@+id/itemWithTagsFragment"
         android:name="org.omgcobra.matchthese.fragments.item.ItemWithTagsFragment"
         android:label="@string/items_title"
-        tools:layout="@layout/fragment_items_view" />
+        tools:layout="@layout/fragment_items_view" >
+        <action
+            android:id="@+id/edit_item"
+            app:destination="@id/itemEditFragment" />
+    </fragment>
     <fragment
         android:id="@+id/tagWithItemsFragment"
         android:name="org.omgcobra.matchthese.fragments.tag.TagWithItemsFragment"
         android:label="@string/tags_title"
         tools:layout="@layout/fragment_tags_view" />
+    <fragment
+        android:id="@+id/itemEditFragment"
+        android:name="org.omgcobra.matchthese.fragments.item.ItemEditFragment"
+        android:label="ItemEditFragment" />
 </navigation>
