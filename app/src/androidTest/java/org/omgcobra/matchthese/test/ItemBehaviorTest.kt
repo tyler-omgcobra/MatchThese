@@ -37,7 +37,7 @@ class ItemBehaviorTest {
         onView(withId(R.id.item_edit_name))
                 .check(matches(isDisplayed()))
                 .perform(typeText(stringToBeTyped))
-        onView(withText(R.string.add_btn_text))
+        onView(withId(R.id.action_save))
                 .check(matches(isDisplayed()))
                 .perform(click())
         onView(withText(stringToBeTyped))

@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -29,6 +30,7 @@ class TagWithItemsFragment : AbstractListFragment<TagWithItems, TagWithItemsAdap
         val context = rootView.context
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.tag_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         adapter = TagWithItemsAdapter(context)
         setListData(itemList)
         recyclerView.adapter = adapter

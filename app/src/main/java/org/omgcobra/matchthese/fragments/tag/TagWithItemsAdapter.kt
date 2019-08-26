@@ -1,11 +1,12 @@
 package org.omgcobra.matchthese.fragments.tag
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.AbstractComparableAdapter
@@ -14,7 +15,8 @@ import org.omgcobra.matchthese.model.TagWithItems
 class TagWithItemsAdapter(context: Context) : AbstractComparableAdapter<TagWithItems, TagWithItemsAdapter.TagWithItemsViewHolder>(context) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TagWithItemsViewHolder {
-        return TagWithItemsViewHolder(View.inflate(context, R.layout.tag_view_tags_with_items, null))
+        val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        return TagWithItemsViewHolder(inflater.inflate(R.layout.tag_view_tags_with_items, parent, false))
     }
 
     override fun onBindViewHolder(holder: TagWithItemsViewHolder, position: Int) {
