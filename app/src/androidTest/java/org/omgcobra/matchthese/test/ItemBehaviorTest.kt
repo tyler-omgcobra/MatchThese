@@ -4,6 +4,8 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.contrib.DrawerActions
+import androidx.test.espresso.contrib.DrawerMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -20,14 +22,16 @@ import java.util.*
 @LargeTest
 class ItemBehaviorTest {
 
-    private lateinit var stringToBeTyped: String
+    private lateinit var name: String
+    private lateinit var tag: String
 
     @get:Rule
     var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
 
     @Before
     fun initValidString() {
-        stringToBeTyped = UUID.randomUUID().toString()
+        name = UUID.randomUUID().toString()
+        tag = UUID.randomUUID().toString()
     }
 
     @Test
@@ -36,14 +40,30 @@ class ItemBehaviorTest {
                 .perform(click())
         onView(withId(R.id.item_edit_name))
                 .check(matches(isDisplayed()))
-                .perform(typeText(stringToBeTyped))
+                .perform(typeText(name))
+        onView(withId(R.id.item_edit_tags))
+                .check(matches(isDisplayed()))
+                .perform(typeText(tag))
         onView(withId(R.id.action_save))
                 .check(matches(isDisplayed()))
                 .perform(click())
-        onView(withText(stringToBeTyped))
+
+        onView(withText(name))
                 .check(matches(isDisplayed()))
                 .perform(swipeLeft())
+        onView(withText(name))
                 .check(doesNotExist())
 
+        onView(withId(R.id.drawer_layout))
+                .perform(DrawerActions.open())
+                .check(matches(DrawerMatchers.isOpen()))
+
+        onView(withText(R.string.tags_title))
+                .perform(click())
+        onView(withText(tag))
+                .check(matches(isDisplayed())).check(matches(isDisplayed()))
+                .perform(swipeLeft())
+        onView(withText(tag))
+                .check(doesNotExist())
     }
 }

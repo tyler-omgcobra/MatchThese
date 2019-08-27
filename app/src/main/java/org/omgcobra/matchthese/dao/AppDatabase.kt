@@ -15,7 +15,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun itemTagCompositeDao(): ItemTagCompositeDao
     abstract fun tagDao(): TagDao
     abstract fun itemTagJoinDao(): ItemTagJoinDao
-    fun <T : AbstractEntity> dao(klass: KClass<T>): AbstractDao<T> {
+    fun <T : AbstractEntity<T>> dao(klass: KClass<T>): AbstractDao<T> {
         return (when (klass) {
             Item::class -> itemDao()
             Tag::class -> tagDao()

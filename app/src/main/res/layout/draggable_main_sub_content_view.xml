@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/list_item_item_with_tags"
+    android:id="@+id/draggable_main_sub_content_view"
     android:layout_width="match_parent"
     android:layout_height="?listPreferredItemHeight"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?selectableItemBackground">
 
-    <TextView
-        android:id="@+id/item_name"
-        style="@style/item_view.main_content"
+    <LinearLayout
+        android:id="@+id/text_views"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/item_tags"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/handle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
 
-    <TextView
-        android:id="@+id/item_tags"
-        style="@style/item_view.sub_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toLeftOf="@id/handle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/item_name" />
+        <TextView
+            android:id="@+id/main_text"
+            style="@style/item_view.main_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/sub_text"
+            style="@style/item_view.sub_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/handle"

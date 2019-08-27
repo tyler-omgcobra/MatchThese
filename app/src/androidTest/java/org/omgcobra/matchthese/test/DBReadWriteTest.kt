@@ -59,7 +59,7 @@ class DBReadWriteTest {
         checkJoin(item, tag)
 
         deleteTag(tag)
-        assertThat(itemTagCompositeDao.loadItemWithTags(item.id).tagList as Collection<*>, `is`(empty()))
+        assertThat(itemTagCompositeDao.loadItemWithTags(item.id).list as Collection<*>, `is`(empty()))
         assertThat(itemTagCompositeDao.loadTagWithItems(tag.id), nullValue())
         deleteItem(item)
     }
@@ -71,8 +71,8 @@ class DBReadWriteTest {
 
     private fun checkJoin(item: Item, tag: Tag) {
         val itemWithTags = itemTagCompositeDao.loadItemWithTags(item.id)
-        assertThat(itemWithTags.item, equalTo(item))
-        assertThat(itemWithTags.tagList, contains(tag.name))
+        assertThat(itemWithTags.entity, equalTo(item))
+        assertThat(itemWithTags.list, contains(tag.name))
     }
 
     private fun createItem(name: String): Item {

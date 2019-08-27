@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import org.omgcobra.matchthese.model.AbstractEntity
 
-interface AbstractDao<T: AbstractEntity> {
+interface AbstractDao<T: AbstractEntity<T>> {
 
     fun getAll(): LiveData<List<T>>
 

@@ -38,7 +38,7 @@ class ItemEditFragment: Fragment() {
         itemWithTags = arguments?.get("itemWithTags") as ItemWithTags?
 
         nameEditText = rootView.findViewById(R.id.item_edit_name)
-        nameEditText.setText(itemWithTags?.item?.name)
+        nameEditText.setText(itemWithTags?.entity?.name)
 
 //        val tags = ItemRepository.getTagsWithItems().value!!.map { it.tag.name }
         val tags = listOf("cool", "uncool")
@@ -46,7 +46,7 @@ class ItemEditFragment: Fragment() {
         tagsEditText = rootView.findViewById(R.id.item_edit_tags)
         tagsEditText.setAdapter(adapter)
         tagsEditText.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
-        tagsEditText.setText(itemWithTags?.tagList?.joinToString { it })
+        tagsEditText.setText(itemWithTags?.list?.joinToString { it })
 
         return rootView
     }
@@ -54,7 +54,7 @@ class ItemEditFragment: Fragment() {
     private fun saveItem() {
         val name = nameEditText.text.toString()
         val tags = tagsEditText.text.toString().split(Regex(", *"))
-        val item = itemWithTags?.item ?: Item(name)
+        val item = itemWithTags?.entity ?: Item(name)
 
         if (itemWithTags != null) {
             ItemRepository.update(item)

@@ -14,36 +14,36 @@ class ItemRepository {
         fun getItemsWithTags() = allItemsWithTags
         fun getTagsWithItems() = allTagsWithItems
         fun ensureTagOnItem(item: ItemWithTags, tagName: String) = TagItemTask(db.itemTagJoinDao(), db.tagDao(), tagName).execute(item)
-        inline fun <reified T: AbstractEntity> getAll() = db.dao(T::class).getAll()
-        inline fun <reified T: AbstractEntity> insert(item: T) = InsertAsyncTask(db.dao(T::class)).execute(item)!!
-        inline fun <reified T: AbstractEntity> update(item: T) = UpdateAsyncTask(db.dao(T::class)).execute(item)!!
-        inline fun <reified T: AbstractEntity> delete(item: T) = DeleteAsyncTask(db.dao(T::class)).execute(item)!!
-        inline fun <reified T: AbstractEntity> deleteAll() = DeleteAllAsyncTask(db.dao(T::class)).execute()!!
+        inline fun <reified T: AbstractEntity<T>> getAll() = db.dao(T::class).getAll()
+        inline fun <reified T: AbstractEntity<T>> deleteAll() = DeleteAllAsyncTask(db.dao(T::class)).execute()!!
+        inline fun <reified T: AbstractEntity<T>> insert(item: T) = InsertAsyncTask(db.dao(T::class)).execute(item)!!
+        inline fun <reified T: AbstractEntity<T>> update(item: T) = UpdateAsyncTask(db.dao(T::class)).execute(item)!!
+        inline fun <reified T: AbstractEntity<T>> delete(item: T) = DeleteAsyncTask(db.dao(T::class)).execute(item)!!
     }
 }
 
-class InsertAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
+class InsertAsyncTask<T: AbstractEntity<T>>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
     override fun doInBackground(vararg items: T): Void? {
         dao.insert(*items).forEachIndexed { index, id -> items[index].id = id }
         return null
     }
 }
 
-class UpdateAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
+class UpdateAsyncTask<T: AbstractEntity<T>>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
     override fun doInBackground(vararg items: T): Void? {
         dao.update(*items)
         return null
     }
 }
 
-class DeleteAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
+class DeleteAsyncTask<T: AbstractEntity<T>>(private val dao: AbstractDao<T>): AsyncTask<T, Void, Void>() {
     override fun doInBackground(vararg items: T): Void? {
         dao.delete(*items)
         return null
     }
 }
 
-class DeleteAllAsyncTask<T: AbstractEntity>(private val dao: AbstractDao<T>): AsyncTask<Void, Void, Void>() {
+class DeleteAllAsyncTask<T: AbstractEntity<T>>(private val dao: AbstractDao<T>): AsyncTask<Void, Void, Void>() {
     override fun doInBackground(vararg items: Void): Void? {
         dao.deleteAll()
         return null
@@ -59,11 +59,10 @@ class TagItemTask(private val itemTagJoinDao: ItemTagJoinDao, private val tagDao
         }
 
         itemsWithTags.forEach {
-            if (!it.tagList.contains(tagName)) {
-                itemTagJoinDao.insert(ItemTagJoin(it.item, tag))
+            if (!it.list.contains(tagName)) {
+                itemTagJoinDao.insert(ItemTagJoin(it.entity, tag))
             }
         }
         return null
     }
-
 }

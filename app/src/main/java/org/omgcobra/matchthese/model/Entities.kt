@@ -3,16 +3,24 @@ package org.omgcobra.matchthese.model
 import androidx.room.*
 import java.io.Serializable
 
-abstract class AbstractEntity(@PrimaryKey(autoGenerate = true) var id: Long): Serializable
-
-@Entity(indices = [Index(value = ["id", "name"], unique = true)])
-data class Item(var name: String): AbstractEntity(0L), Comparable<Item> {
-    override fun compareTo(other: Item) = this.name.compareTo(other.name, true)
+abstract class AbstractEntity<T: AbstractEntity<T>>(@PrimaryKey(autoGenerate = true) var id: Long): Serializable, Comparable<T> {
+    override fun compareTo(other: T) = this.id.compareTo(other.id)
+}
+abstract class CompositeListEntity<T: AbstractEntity<T>>(@Embedded val entity: T): Serializable, Comparable<CompositeListEntity<T>> {
+    abstract var list: List<String>
+    override fun compareTo(other: CompositeListEntity<T>) = this.entity.compareTo(other.entity)
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
-data class Tag(var name: String): AbstractEntity(0L), Comparable<Tag> {
+data class Item(var name: String): AbstractEntity<Item>(0L) {
+    override fun compareTo(other: Item) = this.name.compareTo(other.name, true)
+    override fun toString() = name
+}
+
+@Entity(indices = [Index(value = ["id", "name"], unique = true)])
+data class Tag(var name: String): AbstractEntity<Tag>(0L) {
     override fun compareTo(other: Tag) = this.name.compareTo(other.name, true)
+    override fun toString() = name
 }
 
 @Entity(foreignKeys = [
@@ -33,34 +41,22 @@ data class Tag(var name: String): AbstractEntity(0L), Comparable<Tag> {
 data class ItemTagJoin(
         @Embedded(prefix = "item") val item: Item,
         @Embedded(prefix = "tag") val tag: Tag?
-): AbstractEntity(0L)
+): AbstractEntity<ItemTagJoin>(0L)
 
-data class ItemWithTags(
-        @Embedded val item: Item
-): Comparable<ItemWithTags>, Serializable {
+class ItemWithTags(entity: Item): CompositeListEntity<Item>(entity) {
     @Relation(
             parentColumn = "id",
             entityColumn = "itemid",
             entity = ItemTagJoin::class,
             projection = ["tagname"]
-    ) var tagList: List<String> = listOf()
-
-    override fun compareTo(other: ItemWithTags): Int {
-        return this.item.compareTo(other.item)
-    }
+    ) override var list: List<String> = listOf()
 }
 
-data class TagWithItems(
-        @Embedded val tag: Tag
-): Comparable<TagWithItems>, Serializable {
+class TagWithItems(entity: Tag): CompositeListEntity<Tag>(entity){
     @Relation(
             parentColumn = "id",
             entityColumn = "tagid",
             entity = ItemTagJoin::class,
             projection = ["itemname"]
-    ) var itemList: List<String> = listOf()
-
-    override fun compareTo(other: TagWithItems): Int {
-        return this.tag.compareTo(other.tag)
-    }
+    ) override var list: List<String> = listOf()
 }
