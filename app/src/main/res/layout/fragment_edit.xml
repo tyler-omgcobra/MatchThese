@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/item_edit_name"
+        android:id="@+id/edit_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
@@ -14,7 +14,7 @@
         android:hint="@string/name" />
 
     <MultiAutoCompleteTextView
-        android:id="@+id/item_edit_tags"
+        android:id="@+id/edit_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/tags"

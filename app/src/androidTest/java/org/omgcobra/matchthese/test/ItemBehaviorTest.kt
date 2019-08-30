@@ -38,10 +38,10 @@ class ItemBehaviorTest {
     fun addItem_sameActivity() {
         onView(withId(R.id.floating_action_button_item))
                 .perform(click())
-        onView(withId(R.id.item_edit_name))
+        onView(withId(R.id.edit_name))
                 .check(matches(isDisplayed()))
                 .perform(typeText(name))
-        onView(withId(R.id.item_edit_tags))
+        onView(withId(R.id.edit_list))
                 .check(matches(isDisplayed()))
                 .perform(typeText(tag))
         onView(withId(R.id.action_save))

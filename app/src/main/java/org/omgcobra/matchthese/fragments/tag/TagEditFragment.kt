@@ -1,4 +1,4 @@
-package org.omgcobra.matchthese.fragments.item
+package org.omgcobra.matchthese.fragments.tag
 
 import android.view.*
 import android.widget.ArrayAdapter
@@ -7,16 +7,16 @@ import androidx.navigation.fragment.findNavController
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
-import org.omgcobra.matchthese.model.Item
-import org.omgcobra.matchthese.model.ItemWithTags
+import org.omgcobra.matchthese.model.Tag
+import org.omgcobra.matchthese.model.TagWithItems
 
-class ItemEditFragment: CompositeListEntityEditFragment<ItemWithTags>() {
-    override val hintId = R.string.tags
+class TagEditFragment: CompositeListEntityEditFragment<TagWithItems>() {
+    override val hintId = R.string.items
 
     override fun initEntity(view: View) {
         nameEditText.setText(listEntity?.entity?.name)
-        val tags = listOf("cool", "uncool")
-        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, tags)
+        val items = listOf("Tyler", "Stephanie")
+        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
         listEditText.setAdapter(adapter)
         listEditText.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
         listEditText.setText(listEntity?.list?.joinToString { it })
@@ -24,19 +24,19 @@ class ItemEditFragment: CompositeListEntityEditFragment<ItemWithTags>() {
 
     override fun saveItem() {
         val name = nameEditText.text.toString()
-        val tags = listEditText.text.toString().split(Regex(", *"))
-        val item = listEntity?.entity ?: Item(name)
-        item.name = name
+        val items = listEditText.text.toString().split(Regex(", *"))
+        val tag = listEntity?.entity ?: Tag(name)
+        tag.name = name
 
         if (listEntity != null) {
-            ItemRepository.update(item)
+            ItemRepository.update(tag)
         } else {
-            listEntity = ItemWithTags(item)
-            ItemRepository.insert(item)
+            listEntity = TagWithItems(tag)
+            ItemRepository.insert(tag)
         }
 
-        for (tag in tags) {
-            if (tag.isNotEmpty()) ItemRepository.ensureTagOnItem(listEntity!!, tag)
+        for (item in items) {
+            if (item.isNotEmpty()) ItemRepository.ensureItemInTag(listEntity!!, item)
         }
 
         findNavController().popBackStack()

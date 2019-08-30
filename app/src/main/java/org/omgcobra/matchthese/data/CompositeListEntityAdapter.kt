@@ -2,6 +2,7 @@ package org.omgcobra.matchthese.data
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
@@ -11,7 +12,7 @@ import org.omgcobra.matchthese.model.AbstractEntity
 import org.omgcobra.matchthese.model.CompositeListEntity
 import java.util.Collections
 
-abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val context: Context) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
+abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val context: Context, private val dragListener: StartDragListener) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
 
     var dataSet: List<CompositeListEntity<E>> = emptyList()
         set(list) {
@@ -19,6 +20,7 @@ abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val con
             notifyDataSetChanged()
         }
     protected var deletedItem: CompositeListEntity<E>? = null
+    protected abstract val editActionId: Int
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CompositeListEntityViewHolder {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -26,11 +28,15 @@ abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val con
     }
 
     override fun onBindViewHolder(holder: CompositeListEntityViewHolder, position: Int) {
-        val itemWithTags = dataSet[position]
-        holder.mainText.text = itemWithTags.entity.toString()
-        holder.subText.text = itemWithTags.list.joinToString { it }
+        val listEntity = dataSet[position]
+        holder.mainText.text = listEntity.entity.toString()
+        holder.subText.text = listEntity.list.joinToString { it }
         holder.itemView.setOnClickListener {
-            it.findNavController().navigate(R.id.edit_item, bundleOf("itemWithTags" to itemWithTags))
+            it.findNavController().navigate(editActionId, bundleOf("listEntity" to listEntity))
+        }
+        holder.dragHandle.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) dragListener.onStartDrag(holder)
+            false
         }
     }
 
@@ -47,11 +53,11 @@ abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val con
 
     fun onItemMove(from: Int, to: Int): Boolean {
         if (from < to) {
-            for (i in from..to) {
+            for (i in from until to) {
                 Collections.swap(dataSet, i, i + 1)
             }
         } else {
-            for (i in from..to) {
+            for (i in from until to) {
                 Collections.swap(dataSet, i, i - 1)
             }
         }

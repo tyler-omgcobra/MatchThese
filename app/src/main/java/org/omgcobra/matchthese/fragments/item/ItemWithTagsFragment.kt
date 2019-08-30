@@ -25,6 +25,7 @@ import org.omgcobra.matchthese.model.ItemWithTags
 class ItemWithTagsFragment: AbstractListFragment<Item, ItemWithTags, ItemWithTagsAdapter>() {
     private val viewModel: ItemWithTagsViewModel by viewModels()
     override lateinit var adapter: ItemWithTagsAdapter
+    override lateinit var itemTouchHelper: ItemTouchHelper
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -34,11 +35,11 @@ class ItemWithTagsFragment: AbstractListFragment<Item, ItemWithTags, ItemWithTag
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.item_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        adapter = ItemWithTagsAdapter(context)
+        adapter = ItemWithTagsAdapter(context, this)
         setListData(itemList)
         recyclerView.adapter = adapter
 
-        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
+        itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(adapter))
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
         return rootView

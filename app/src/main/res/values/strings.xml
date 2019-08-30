@@ -14,4 +14,5 @@
     <string name="add_item_title">Add Item</string>
     <string name="tags">Tags</string>
     <string name="drag_handle">Drag handle</string>
+    <string name="items">Items</string>
 </resources>

@@ -19,6 +19,7 @@ class ItemRepository {
         inline fun <reified T: AbstractEntity<T>> insert(item: T) = InsertAsyncTask(db.dao(T::class)).execute(item)!!
         inline fun <reified T: AbstractEntity<T>> update(item: T) = UpdateAsyncTask(db.dao(T::class)).execute(item)!!
         inline fun <reified T: AbstractEntity<T>> delete(item: T) = DeleteAsyncTask(db.dao(T::class)).execute(item)!!
+        fun ensureItemInTag(tag: TagWithItems, itemName: String) = ItemTagTask(db.itemTagJoinDao(), db.itemDao(), itemName).execute(tag)
     }
 }
 
@@ -61,6 +62,23 @@ class TagItemTask(private val itemTagJoinDao: ItemTagJoinDao, private val tagDao
         itemsWithTags.forEach {
             if (!it.list.contains(tagName)) {
                 itemTagJoinDao.insert(ItemTagJoin(it.entity, tag))
+            }
+        }
+        return null
+    }
+}
+
+class ItemTagTask(private val itemTagJoinDao: ItemTagJoinDao, private val itemDao: ItemDao, private val itemName: String): AsyncTask<TagWithItems, Void, Void>() {
+    override fun doInBackground(vararg tagsWithItems: TagWithItems): Void? {
+        val item = itemDao.getByName(itemName) ?: Item(itemName)
+
+        if (item.id == 0L) {
+            item.id = itemDao.insert(item)
+        }
+
+        tagsWithItems.forEach {
+            if (!it.list.contains(itemName)) {
+                itemTagJoinDao.insert(ItemTagJoin(item, it.entity))
             }
         }
         return null
