@@ -87,6 +87,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun onAddTagBtnClick(view: View) {
-
+        navController.navigate(R.id.edit_tag)
     }
 }
