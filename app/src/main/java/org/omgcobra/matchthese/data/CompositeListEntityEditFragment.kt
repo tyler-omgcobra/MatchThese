@@ -3,6 +3,7 @@ package org.omgcobra.matchthese.data
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -25,6 +26,8 @@ abstract class CompositeListEntityEditFragment<T: CompositeListEntity<*>>: Fragm
     }
 
     protected open fun saveItem() {
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view!!.windowToken, 0)
         entitySavedListener.updateListData()
         findNavController().popBackStack()
     }
