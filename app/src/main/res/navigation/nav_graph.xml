@@ -26,9 +26,9 @@
     <fragment
         android:id="@+id/itemEditFragment"
         android:name="org.omgcobra.matchthese.fragments.item.ItemEditFragment"
-        android:label="ItemEditFragment" />
+        android:label="@string/item_edit_title" />
     <fragment
         android:id="@+id/tagEditFragment"
         android:name="org.omgcobra.matchthese.fragments.tag.TagEditFragment"
-        android:label="TagEditFragment" />
+        android:label="@string/tag_edit_title" />
 </navigation>
