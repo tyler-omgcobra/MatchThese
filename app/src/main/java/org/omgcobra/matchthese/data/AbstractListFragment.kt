@@ -18,6 +18,10 @@ abstract class AbstractListFragment<E: AbstractEntity<E>, T: CompositeListEntity
         adapter.dataSet = itemList
     }
 
+    fun refreshListData() {
+        adapter.dataSet = itemList
+    }
+
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
         itemTouchHelper.startDrag(viewHolder)
     }

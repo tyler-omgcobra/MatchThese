@@ -29,7 +29,7 @@ abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val con
 
     override fun onBindViewHolder(holder: CompositeListEntityViewHolder, position: Int) {
         val listEntity = dataSet[position]
-        holder.mainText.text = listEntity.entity.toString()
+        holder.mainText.text = listEntity.toString()
         holder.subText.text = listEntity.list.joinToString { it }
         holder.itemView.setOnClickListener {
             it.findNavController().navigate(editActionId, bundleOf("listEntity" to listEntity))

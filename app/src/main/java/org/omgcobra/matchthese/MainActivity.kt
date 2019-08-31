@@ -14,8 +14,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import org.omgcobra.matchthese.data.AbstractListFragment
+import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(),
+        NavigationView.OnNavigationItemSelectedListener,
+        CompositeListEntityEditFragment.ListEntitySavedListener {
     private lateinit var toolbar: Toolbar
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navController: NavController
@@ -88,5 +92,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun onAddTagBtnClick(view: View) {
         navController.navigate(R.id.edit_tag)
+    }
+
+    override fun updateListData() {
+        listOf(
+                supportFragmentManager.findFragmentById(R.id.itemWithTagsFragment) as AbstractListFragment<*, *, *>?,
+                supportFragmentManager.findFragmentById(R.id.tagWithItemsFragment) as AbstractListFragment<*, *, *>?
+        ).forEach { it?.refreshListData() }
     }
 }

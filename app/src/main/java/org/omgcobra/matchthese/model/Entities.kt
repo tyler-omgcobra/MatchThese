@@ -9,6 +9,7 @@ abstract class AbstractEntity<T: AbstractEntity<T>>(@PrimaryKey(autoGenerate = t
 abstract class CompositeListEntity<T: AbstractEntity<T>>(@Embedded val entity: T): Serializable, Comparable<CompositeListEntity<T>> {
     abstract var list: List<String>
     override fun compareTo(other: CompositeListEntity<T>) = this.entity.compareTo(other.entity)
+    override fun toString() = this.entity.toString()
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
@@ -59,4 +60,7 @@ class TagWithItems(entity: Tag): CompositeListEntity<Tag>(entity){
             entity = ItemTagJoin::class,
             projection = ["itemname"]
     ) override var list: List<String> = listOf()
+
+    override fun compareTo(other: CompositeListEntity<Tag>) = -this.list.size.compareTo(other.list.size)
+    override fun toString() = "%s (%d)".format(this.entity.name, this.list.size)
 }

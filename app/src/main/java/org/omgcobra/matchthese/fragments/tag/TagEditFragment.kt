@@ -3,7 +3,6 @@ package org.omgcobra.matchthese.fragments.tag
 import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.MultiAutoCompleteTextView
-import androidx.navigation.fragment.findNavController
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
@@ -39,6 +38,6 @@ class TagEditFragment: CompositeListEntityEditFragment<TagWithItems>() {
             if (item.isNotEmpty()) ItemRepository.ensureItemInTag(listEntity!!, item)
         }
 
-        findNavController().popBackStack()
+        super.saveItem()
     }
 }
