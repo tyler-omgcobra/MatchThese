@@ -1,11 +1,11 @@
 package org.omgcobra.matchthese.fragments.tag
 
 import android.view.*
-import android.widget.ArrayAdapter
-import android.widget.MultiAutoCompleteTextView
+import androidx.lifecycle.observe
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
+import org.omgcobra.matchthese.model.Item
 import org.omgcobra.matchthese.model.Tag
 import org.omgcobra.matchthese.model.TagWithItems
 
@@ -14,11 +14,12 @@ class TagEditFragment: CompositeListEntityEditFragment<TagWithItems>() {
 
     override fun initEntity(view: View) {
         nameEditText.setText(listEntity?.entity?.name)
-        val items = listOf("Tyler", "Stephanie")
-        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, items)
-        listEditText.setAdapter(adapter)
-        listEditText.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
-        listEditText.setText(listEntity?.list?.joinToString { it })
+        val adapter = createAdapter()
+        setupListEditText(adapter)
+        ItemRepository.getAll<Item>().observe(this) { itemList ->
+            adapter.clear()
+            adapter.addAll(itemList.map { it.name })
+        }
     }
 
     override fun saveItem() {

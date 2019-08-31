@@ -3,8 +3,7 @@ package org.omgcobra.matchthese.data
 import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
-import android.widget.MultiAutoCompleteTextView
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.omgcobra.matchthese.R
@@ -20,13 +19,27 @@ abstract class CompositeListEntityEditFragment<T: CompositeListEntity<*>>: Fragm
     abstract val hintId: Int
 
     protected abstract fun initEntity(view: View)
+
+    interface ListEntitySavedListener {
+        fun updateListData()
+    }
+
     protected open fun saveItem() {
         entitySavedListener.updateListData()
         findNavController().popBackStack()
     }
 
-    interface ListEntitySavedListener {
-        fun updateListData()
+    protected fun createAdapter(): ArrayAdapter<String> {
+        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, listOf())
+        adapter.setNotifyOnChange(true)
+        return adapter
+    }
+
+    protected fun <T> setupListEditText(adapter: T) where T : ListAdapter, T : Filterable {
+        listEditText.setAdapter(adapter)
+        listEditText.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
+        listEditText.setText(listEntity?.list?.joinToString { it })
+        listEditText.threshold = 1
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

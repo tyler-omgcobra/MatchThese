@@ -61,6 +61,10 @@ class TagWithItems(entity: Tag): CompositeListEntity<Tag>(entity){
             projection = ["itemname"]
     ) override var list: List<String> = listOf()
 
-    override fun compareTo(other: CompositeListEntity<Tag>) = -this.list.size.compareTo(other.list.size)
+    override fun compareTo(other: CompositeListEntity<Tag>) =
+            when (val compare = -this.list.size.compareTo(other.list.size)) {
+                0 -> super.compareTo(other)
+                else -> compare
+            }
     override fun toString() = "%s (%d)".format(this.entity.name, this.list.size)
 }

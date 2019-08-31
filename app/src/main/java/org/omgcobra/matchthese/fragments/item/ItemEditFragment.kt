@@ -1,24 +1,25 @@
 package org.omgcobra.matchthese.fragments.item
 
 import android.view.*
-import android.widget.ArrayAdapter
-import android.widget.MultiAutoCompleteTextView
+import androidx.lifecycle.observe
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
 import org.omgcobra.matchthese.model.Item
 import org.omgcobra.matchthese.model.ItemWithTags
+import org.omgcobra.matchthese.model.Tag
 
 class ItemEditFragment: CompositeListEntityEditFragment<ItemWithTags>() {
     override val hintId = R.string.tags
 
     override fun initEntity(view: View) {
         nameEditText.setText(listEntity?.entity?.name)
-        val tags = listOf("cool", "uncool")
-        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, tags)
-        listEditText.setAdapter(adapter)
-        listEditText.setTokenizer(MultiAutoCompleteTextView.CommaTokenizer())
-        listEditText.setText(listEntity?.list?.joinToString { it })
+        val adapter = createAdapter()
+        setupListEditText(adapter)
+        ItemRepository.getAll<Tag>().observe(this) { tagList ->
+            adapter.clear()
+            adapter.addAll(tagList.map { it.name })
+        }
     }
 
     override fun saveItem() {
