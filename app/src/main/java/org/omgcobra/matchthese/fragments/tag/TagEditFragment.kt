@@ -35,9 +35,11 @@ class TagEditFragment: CompositeListEntityEditFragment<TagWithItems>() {
             ItemRepository.insert(tag)
         }
 
-        for (item in items) {
-            if (item.isNotEmpty()) ItemRepository.ensureItemInTag(listEntity!!, item)
-        }
+        listEntity!!.list.filter { !items.contains(it) }
+                .forEach { ItemRepository.removeItemFromTag(listEntity!!, it) }
+
+        items.filter { it.isNotEmpty() }
+                .forEach { ItemRepository.ensureItemInTag(listEntity!!, it) }
 
         super.saveItem()
     }

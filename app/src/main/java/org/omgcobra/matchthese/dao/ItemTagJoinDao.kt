@@ -16,4 +16,7 @@ interface ItemTagJoinDao: AbstractDao<ItemTagJoin> {
 
     @Query("DELETE FROM ItemTagJoin")
     override fun deleteAll()
+
+    @Query("SELECT * FROM ItemTagJoin WHERE itemid = :itemId AND tagid = :tagId")
+    fun getByItemAndTag(itemId: Long, tagId: Long): ItemTagJoin?
 }
