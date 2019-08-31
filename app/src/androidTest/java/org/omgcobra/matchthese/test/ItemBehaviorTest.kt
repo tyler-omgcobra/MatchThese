@@ -10,6 +10,7 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
+import org.hamcrest.core.StringStartsWith
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -60,9 +61,9 @@ class ItemBehaviorTest {
 
         onView(withText(R.string.tags_title))
                 .perform(click())
-        onView(withText(tag))
-                .check(matches(isDisplayed())).check(matches(isDisplayed()))
-                .perform(swipeLeft())
+        onView(withText(StringStartsWith(tag)))
+                .check(matches(isDisplayed()))
+                .perform(swipeRight())
         onView(withText(tag))
                 .check(doesNotExist())
     }
