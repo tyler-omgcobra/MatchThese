@@ -16,13 +16,12 @@ import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.data.AbstractListFragment
 import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
 import org.omgcobra.matchthese.model.Item
-import org.omgcobra.matchthese.model.ItemWithTags
 
 /**
  * A simple [Fragment] subclass.
  *
  */
-class ItemWithTagsFragment: AbstractListFragment<Item, ItemWithTags, ItemWithTagsAdapter>() {
+class ItemWithTagsFragment: AbstractListFragment<Item, ItemWithTagsAdapter>() {
     private val viewModel: ItemWithTagsViewModel by viewModels()
     override lateinit var adapter: ItemWithTagsAdapter
     override lateinit var itemTouchHelper: ItemTouchHelper

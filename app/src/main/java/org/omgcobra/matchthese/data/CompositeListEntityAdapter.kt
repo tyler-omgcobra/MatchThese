@@ -8,19 +8,21 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
-import org.omgcobra.matchthese.model.AbstractEntity
-import org.omgcobra.matchthese.model.CompositeListEntity
+import org.omgcobra.matchthese.model.CompositeNamedListEntity
+import org.omgcobra.matchthese.model.NamedEntity
 import java.util.Collections
 
-abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val context: Context, private val dragListener: StartDragListener) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
+abstract class CompositeListEntityAdapter<E: NamedEntity<E>>(internal val context: Context, private val dragListener: StartDragListener) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
 
-    var dataSet: List<CompositeListEntity<E>> = emptyList()
+    var dataSet: List<CompositeNamedListEntity<E, *>> = emptyList()
         set(list) {
-            field = list.sorted()
+            field = list
             notifyDataSetChanged()
         }
-    protected var deletedItem: CompositeListEntity<E>? = null
+    protected var deletedItem: CompositeNamedListEntity<E, *>? = null
     protected abstract val editActionId: Int
+
+    abstract fun getSubText(listEntity: CompositeNamedListEntity<E, *>): String
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CompositeListEntityViewHolder {
         val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -30,7 +32,7 @@ abstract class CompositeListEntityAdapter<E: AbstractEntity<E>>(internal val con
     override fun onBindViewHolder(holder: CompositeListEntityViewHolder, position: Int) {
         val listEntity = dataSet[position]
         holder.mainText.text = listEntity.toString()
-        holder.subText.text = listEntity.list.joinToString { it }
+        holder.subText.text = getSubText(listEntity)
         holder.itemView.setOnClickListener {
             it.findNavController().navigate(editActionId, bundleOf("listEntity" to listEntity))
         }

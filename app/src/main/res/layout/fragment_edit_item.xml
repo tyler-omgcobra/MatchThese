@@ -13,10 +13,9 @@
         android:singleLine="true"
         android:hint="@string/name" />
 
-    <MultiAutoCompleteTextView
+    <org.omgcobra.matchthese.data.TagCompleteView
         android:id="@+id/edit_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/tags"
         />
 </LinearLayout>

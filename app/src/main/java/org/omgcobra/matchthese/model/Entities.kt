@@ -3,23 +3,25 @@ package org.omgcobra.matchthese.model
 import androidx.room.*
 import java.io.Serializable
 
-abstract class AbstractEntity<T: AbstractEntity<T>>(@PrimaryKey(autoGenerate = true) var id: Long): Serializable, Comparable<T> {
-    override fun compareTo(other: T) = this.id.compareTo(other.id)
+abstract class AbstractEntity<T: AbstractEntity<T>>(@PrimaryKey(autoGenerate = true) var id: Long): Serializable
+abstract class NamedEntity<T: NamedEntity<T>>: AbstractEntity<T>(0L), Comparable<T> {
+    abstract var name: String
+    override fun compareTo(other: T) = this.name.compareTo(other.name, true)
 }
-abstract class CompositeListEntity<T: AbstractEntity<T>>(@Embedded val entity: T): Serializable, Comparable<CompositeListEntity<T>> {
-    abstract var list: List<String>
-    override fun compareTo(other: CompositeListEntity<T>) = this.entity.compareTo(other.entity)
+abstract class CompositeNamedListEntity<T: NamedEntity<T>, L: AbstractEntity<L>>(@Embedded val entity: T): Serializable, Comparable<CompositeNamedListEntity<T, L>> {
+    abstract var joinList: List<ItemTagJoin>
+    override fun compareTo(other: CompositeNamedListEntity<T, L>) = this.entity.compareTo(other.entity)
     override fun toString() = this.entity.toString()
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
-data class Item(var name: String): AbstractEntity<Item>(0L) {
+data class Item(override var name: String): NamedEntity<Item>() {
     override fun compareTo(other: Item) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
-data class Tag(var name: String): AbstractEntity<Tag>(0L) {
+data class Tag(override var name: String): NamedEntity<Tag>() {
     override fun compareTo(other: Tag) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }
@@ -44,27 +46,25 @@ data class ItemTagJoin(
         @Embedded(prefix = "tag") val tag: Tag?
 ): AbstractEntity<ItemTagJoin>(0L)
 
-class ItemWithTags(entity: Item): CompositeListEntity<Item>(entity) {
+class ItemWithTags(entity: Item): CompositeNamedListEntity<Item, Tag>(entity) {
     @Relation(
             parentColumn = "id",
             entityColumn = "itemid",
-            entity = ItemTagJoin::class,
-            projection = ["tagname"]
-    ) override var list: List<String> = listOf()
+            entity = ItemTagJoin::class
+    ) override var joinList: List<ItemTagJoin> = listOf()
 }
 
-class TagWithItems(entity: Tag): CompositeListEntity<Tag>(entity){
+class TagWithItems(entity: Tag): CompositeNamedListEntity<Tag, Item>(entity){
     @Relation(
             parentColumn = "id",
             entityColumn = "tagid",
-            entity = ItemTagJoin::class,
-            projection = ["itemname"]
-    ) override var list: List<String> = listOf()
+            entity = ItemTagJoin::class
+    ) override var joinList: List<ItemTagJoin> = listOf()
 
-    override fun compareTo(other: CompositeListEntity<Tag>) =
-            when (val compare = -this.list.size.compareTo(other.list.size)) {
+    override fun compareTo(other: CompositeNamedListEntity<Tag, Item>) =
+            when (val compare = -this.joinList.size.compareTo(other.joinList.size)) {
                 0 -> super.compareTo(other)
                 else -> compare
             }
-    override fun toString() = "%s (%d)".format(this.entity.name, this.list.size)
+    override fun toString() = "%s (%d)".format(this.entity.name, this.joinList.size)
 }

@@ -9,22 +9,26 @@ import org.omgcobra.matchthese.model.Item
 import org.omgcobra.matchthese.model.ItemWithTags
 import org.omgcobra.matchthese.model.Tag
 
-class ItemEditFragment: CompositeListEntityEditFragment<ItemWithTags>() {
+class ItemEditFragment: CompositeListEntityEditFragment<Item, Tag>() {
     override val hintId = R.string.tags
+    override val layoutId = R.layout.fragment_edit_item
 
     override fun initEntity(view: View) {
-        nameEditText.setText(listEntity?.entity?.name)
         val adapter = createAdapter()
         setupListEditText(adapter)
+        listEditText.setText("%s,".format(listEntity?.joinList?.joinToString { it.tag.toString() }))
+        listEntity?.joinList?.forEach {
+            listEditText.addObjectSync(it.tag)
+        }
         ItemRepository.getAll<Tag>().observe(this) { tagList ->
             adapter.clear()
-            adapter.addAll(tagList.map { it.name })
+            adapter.addAll(tagList)
         }
     }
 
     override fun saveItem() {
         val name = nameEditText.text.toString()
-        val tags = listEditText.text.toString().split(Regex(", *"))
+        val tags = listEditText.objects
         val item = listEntity?.entity ?: Item(name)
         item.name = name
 
@@ -35,11 +39,10 @@ class ItemEditFragment: CompositeListEntityEditFragment<ItemWithTags>() {
             ItemRepository.insert(item)
         }
 
-        listEntity!!.list.filter { !tags.contains(it) }
-                .forEach { ItemRepository.removeTagFromItem(listEntity!!, it) }
+        listEntity!!.joinList.filter { !tags.contains(it.tag) }
+                .forEach { ItemRepository.removeTagFromItem(listEntity!!, it.tag!!.name) }
 
-        tags.filter { it.isNotEmpty() }
-                .forEach { ItemRepository.ensureTagOnItem(listEntity!!, it) }
+        tags.forEach { ItemRepository.ensureTagOnItem(listEntity!!, it.name) }
 
         super.saveItem()
     }
