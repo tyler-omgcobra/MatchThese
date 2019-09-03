@@ -2,7 +2,6 @@ package org.omgcobra.matchthese.data
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
@@ -12,11 +11,11 @@ import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.NamedEntity
 import java.util.Collections
 
-abstract class CompositeListEntityAdapter<E: NamedEntity<E>>(internal val context: Context, private val dragListener: StartDragListener) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
+abstract class CompositeListEntityAdapter<E: NamedEntity<E>, L: NamedEntity<L>>(internal val context: Context) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
 
-    var dataSet: List<CompositeNamedListEntity<E, *>> = emptyList()
+    var dataSet: List<CompositeNamedListEntity<E, L>> = emptyList()
         set(list) {
-            field = list
+            field = list.sorted()
             notifyDataSetChanged()
         }
     protected var deletedItem: CompositeNamedListEntity<E, *>? = null
@@ -35,10 +34,6 @@ abstract class CompositeListEntityAdapter<E: NamedEntity<E>>(internal val contex
         holder.subText.text = getSubText(listEntity)
         holder.itemView.setOnClickListener {
             it.findNavController().navigate(editActionId, bundleOf("listEntity" to listEntity))
-        }
-        holder.dragHandle.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) dragListener.onStartDrag(holder)
-            false
         }
     }
 

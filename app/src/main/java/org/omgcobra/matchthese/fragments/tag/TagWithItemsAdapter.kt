@@ -4,11 +4,11 @@ import android.content.Context
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.ItemRepository
 import org.omgcobra.matchthese.data.CompositeListEntityAdapter
-import org.omgcobra.matchthese.data.StartDragListener
 import org.omgcobra.matchthese.model.CompositeNamedListEntity
+import org.omgcobra.matchthese.model.Item
 import org.omgcobra.matchthese.model.Tag
 
-class TagWithItemsAdapter(context: Context, dragListener: StartDragListener) : CompositeListEntityAdapter<Tag>(context, dragListener) {
+class TagWithItemsAdapter(context: Context) : CompositeListEntityAdapter<Tag, Item>(context) {
     override val editActionId = R.id.edit_tag
 
     override fun getSubText(listEntity: CompositeNamedListEntity<Tag, *>) = listEntity.joinList.joinToString { it.item.name }

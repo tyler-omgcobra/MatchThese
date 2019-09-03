@@ -96,8 +96,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun updateListData() {
         listOf(
-                supportFragmentManager.findFragmentById(R.id.itemWithTagsFragment) as AbstractListFragment<*, *>?,
-                supportFragmentManager.findFragmentById(R.id.tagWithItemsFragment) as AbstractListFragment<*, *>?
+                supportFragmentManager.findFragmentById(R.id.itemWithTagsFragment) as AbstractListFragment<*, *, *>?,
+                supportFragmentManager.findFragmentById(R.id.tagWithItemsFragment) as AbstractListFragment<*, *, *>?
         ).forEach { it?.refreshListData() }
     }
 }

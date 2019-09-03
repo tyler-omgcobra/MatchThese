@@ -13,13 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.data.AbstractListFragment
 import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
+import org.omgcobra.matchthese.model.Item
 import org.omgcobra.matchthese.model.Tag
 
 /**
  * A simple [Fragment] subclass.
  *
  */
-class TagWithItemsFragment : AbstractListFragment<Tag, TagWithItemsAdapter>() {
+class TagWithItemsFragment : AbstractListFragment<Tag, Item, TagWithItemsAdapter>() {
     private val viewModel: TagWithItemsViewModel by viewModels()
     override lateinit var adapter: TagWithItemsAdapter
     override lateinit var itemTouchHelper: ItemTouchHelper
@@ -32,7 +33,7 @@ class TagWithItemsFragment : AbstractListFragment<Tag, TagWithItemsAdapter>() {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.tag_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        adapter = TagWithItemsAdapter(context, this)
+        adapter = TagWithItemsAdapter(context)
         setListData(itemList)
         recyclerView.adapter = adapter
 

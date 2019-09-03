@@ -2,16 +2,15 @@ package org.omgcobra.matchthese.data
 
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.NamedEntity
 
-abstract class AbstractListFragment<E: NamedEntity<E>, A: CompositeListEntityAdapter<E>>: Fragment(), StartDragListener {
-    protected val itemList = ArrayList<CompositeNamedListEntity<E, *>>()
+abstract class AbstractListFragment<E: NamedEntity<E>, L: NamedEntity<L>, A: CompositeListEntityAdapter<E, L>>: Fragment() {
+    protected val itemList = ArrayList<CompositeNamedListEntity<E, L>>()
     protected abstract var adapter: A
     protected abstract var itemTouchHelper: ItemTouchHelper
 
-    protected fun setListData(newList: List<CompositeNamedListEntity<E, *>>) {
+    protected fun setListData(newList: List<CompositeNamedListEntity<E, L>>) {
         itemList.clear()
         itemList.addAll(newList)
 
@@ -20,9 +19,5 @@ abstract class AbstractListFragment<E: NamedEntity<E>, A: CompositeListEntityAda
 
     fun refreshListData() {
         adapter.dataSet = itemList
-    }
-
-    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-        itemTouchHelper.startDrag(viewHolder)
     }
 }

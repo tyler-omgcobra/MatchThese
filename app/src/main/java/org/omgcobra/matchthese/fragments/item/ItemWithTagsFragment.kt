@@ -16,12 +16,13 @@ import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.data.AbstractListFragment
 import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
 import org.omgcobra.matchthese.model.Item
+import org.omgcobra.matchthese.model.Tag
 
 /**
  * A simple [Fragment] subclass.
  *
  */
-class ItemWithTagsFragment: AbstractListFragment<Item, ItemWithTagsAdapter>() {
+class ItemWithTagsFragment: AbstractListFragment<Item, Tag, ItemWithTagsAdapter>() {
     private val viewModel: ItemWithTagsViewModel by viewModels()
     override lateinit var adapter: ItemWithTagsAdapter
     override lateinit var itemTouchHelper: ItemTouchHelper
@@ -34,7 +35,7 @@ class ItemWithTagsFragment: AbstractListFragment<Item, ItemWithTagsAdapter>() {
         val recyclerView = rootView.findViewById<RecyclerView>(R.id.item_list)
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        adapter = ItemWithTagsAdapter(context, this)
+        adapter = ItemWithTagsAdapter(context)
         setListData(itemList)
         recyclerView.adapter = adapter
 

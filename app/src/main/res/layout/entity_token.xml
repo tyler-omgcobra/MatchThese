@@ -5,6 +5,8 @@
     android:layout_height="wrap_content"
     android:background="@drawable/token_background"
     android:padding="5dp"
-    android:textColor="@color/text_color_secondary"
+    android:textColor="@color/text_color_primary"
     android:textSize="18sp"
-    />
+    android:drawablePadding="5dp"
+    android:drawableEnd="@drawable/ic_clear_black_18dp"
+    android:drawableRight="@drawable/ic_clear_black_18dp" />
