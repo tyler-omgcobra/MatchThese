@@ -3,32 +3,32 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/itemWithTagsFragment">
+    app:startDestination="@id/recipeWithIngredientsFragment">
 
     <fragment
-        android:id="@+id/itemWithTagsFragment"
-        android:name="org.omgcobra.matchthese.fragments.item.ItemWithTagsFragment"
-        android:label="@string/items_title"
-        tools:layout="@layout/fragment_items_view" >
+        android:id="@+id/recipeWithIngredientsFragment"
+        android:name="org.omgcobra.matchthese.fragments.recipe.RecipeWithIngredientsFragment"
+        android:label="@string/recipes_title"
+        tools:layout="@layout/fragment_recipes_view" >
         <action
-            android:id="@+id/edit_item"
-            app:destination="@id/itemEditFragment" />
+            android:id="@+id/edit_recipe"
+            app:destination="@id/recipeEditFragment" />
     </fragment>
     <fragment
-        android:id="@+id/tagWithItemsFragment"
-        android:name="org.omgcobra.matchthese.fragments.tag.TagWithItemsFragment"
-        android:label="@string/tags_title"
-        tools:layout="@layout/fragment_tags_view">
+        android:id="@+id/ingredientWithRecipesFragment"
+        android:name="org.omgcobra.matchthese.fragments.ingredient.IngredientWithRecipesFragment"
+        android:label="@string/ingredients_title"
+        tools:layout="@layout/fragment_ingredients_view">
         <action
-            android:id="@+id/edit_tag"
-            app:destination="@id/tagEditFragment" />
+            android:id="@+id/edit_ingredient"
+            app:destination="@id/ingredientEditFragment" />
     </fragment>
     <fragment
-        android:id="@+id/itemEditFragment"
-        android:name="org.omgcobra.matchthese.fragments.item.ItemEditFragment"
-        android:label="@string/item_edit_title" />
+        android:id="@+id/recipeEditFragment"
+        android:name="org.omgcobra.matchthese.fragments.recipe.RecipeEditFragment"
+        android:label="@string/recipe_edit_title" />
     <fragment
-        android:id="@+id/tagEditFragment"
-        android:name="org.omgcobra.matchthese.fragments.tag.TagEditFragment"
-        android:label="@string/tag_edit_title" />
+        android:id="@+id/ingredientEditFragment"
+        android:name="org.omgcobra.matchthese.fragments.ingredient.IngredientEditFragment"
+        android:label="@string/ingredient_edit_title" />
 </navigation>

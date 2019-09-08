@@ -9,59 +9,59 @@ abstract class NamedEntity<T: NamedEntity<T>>: AbstractEntity<T>(0L), Comparable
     override fun compareTo(other: T) = this.name.compareTo(other.name, true)
 }
 abstract class CompositeNamedListEntity<T: NamedEntity<T>, L: AbstractEntity<L>>(@Embedded val entity: T): Serializable, Comparable<CompositeNamedListEntity<T, L>> {
-    abstract var joinList: List<ItemTagJoin>
+    abstract var joinList: List<RecipeIngredientJoin>
     override fun compareTo(other: CompositeNamedListEntity<T, L>) = this.entity.compareTo(other.entity)
     override fun toString() = this.entity.toString()
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
-data class Item(override var name: String): NamedEntity<Item>() {
-    override fun compareTo(other: Item) = this.name.compareTo(other.name, true)
+data class Recipe(override var name: String): NamedEntity<Recipe>() {
+    override fun compareTo(other: Recipe) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
-data class Tag(override var name: String): NamedEntity<Tag>() {
-    override fun compareTo(other: Tag) = this.name.compareTo(other.name, true)
+data class Ingredient(override var name: String): NamedEntity<Ingredient>() {
+    override fun compareTo(other: Ingredient) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }
 
 @Entity(foreignKeys = [
-            ForeignKey(entity = Tag::class,
+            ForeignKey(entity = Ingredient::class,
                     parentColumns = ["id", "name"],
-                    childColumns = ["tagid", "tagname"],
+                    childColumns = ["ingredientid", "ingredientname"],
                     onDelete = ForeignKey.CASCADE,
                     onUpdate = ForeignKey.CASCADE),
-            ForeignKey(entity = Item::class,
+            ForeignKey(entity = Recipe::class,
                     parentColumns = ["id", "name"],
-                    childColumns = ["itemid", "itemname"],
+                    childColumns = ["recipeid", "recipename"],
                     onDelete = ForeignKey.CASCADE,
                     onUpdate = ForeignKey.CASCADE)
         ],
         indices = [
-            Index(value = ["itemid", "itemname", "tagid", "tagname"], unique = true)
+            Index(value = ["recipeid", "recipename", "ingredientid", "ingredientname"], unique = true)
         ])
-data class ItemTagJoin(
-        @Embedded(prefix = "item") val item: Item,
-        @Embedded(prefix = "tag") val tag: Tag?
-): AbstractEntity<ItemTagJoin>(0L)
+data class RecipeIngredientJoin(
+        @Embedded(prefix = "recipe") val recipe: Recipe,
+        @Embedded(prefix = "ingredient") val ingredient: Ingredient?
+): AbstractEntity<RecipeIngredientJoin>(0L)
 
-class ItemWithTags(entity: Item): CompositeNamedListEntity<Item, Tag>(entity) {
+class RecipeWithIngredients(entity: Recipe): CompositeNamedListEntity<Recipe, Ingredient>(entity) {
     @Relation(
             parentColumn = "id",
-            entityColumn = "itemid",
-            entity = ItemTagJoin::class
-    ) override var joinList: List<ItemTagJoin> = listOf()
+            entityColumn = "recipeid",
+            entity = RecipeIngredientJoin::class
+    ) override var joinList: List<RecipeIngredientJoin> = listOf()
 }
 
-class TagWithItems(entity: Tag): CompositeNamedListEntity<Tag, Item>(entity){
+class IngredientWithRecipes(entity: Ingredient): CompositeNamedListEntity<Ingredient, Recipe>(entity){
     @Relation(
             parentColumn = "id",
-            entityColumn = "tagid",
-            entity = ItemTagJoin::class
-    ) override var joinList: List<ItemTagJoin> = listOf()
+            entityColumn = "ingredientid",
+            entity = RecipeIngredientJoin::class
+    ) override var joinList: List<RecipeIngredientJoin> = listOf()
 
-    override fun compareTo(other: CompositeNamedListEntity<Tag, Item>) =
+    override fun compareTo(other: CompositeNamedListEntity<Ingredient, Recipe>) =
             when (val compare = -this.joinList.size.compareTo(other.joinList.size)) {
                 0 -> super.compareTo(other)
                 else -> compare

@@ -21,10 +21,10 @@ import java.util.*
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class ItemBehaviorTest {
+class RecipeBehaviorTest {
 
     private lateinit var name: String
-    private lateinit var tag: String
+    private lateinit var ingredient: String
 
     @get:Rule
     var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
@@ -32,19 +32,19 @@ class ItemBehaviorTest {
     @Before
     fun initValidString() {
         name = UUID.randomUUID().toString()
-        tag = UUID.randomUUID().toString()
+        ingredient = UUID.randomUUID().toString()
     }
 
     @Test
     fun addItem_sameActivity() {
-        onView(withId(R.id.floating_action_button_item))
+        onView(withId(R.id.floating_action_button_recipe))
                 .perform(click())
         onView(withId(R.id.edit_name))
                 .check(matches(isDisplayed()))
                 .perform(typeText(name))
         onView(withId(R.id.edit_list))
                 .check(matches(isDisplayed()))
-                .perform(typeText("$tag,"))
+                .perform(typeText("$ingredient,"))
         onView(withId(R.id.action_save))
                 .check(matches(isDisplayed()))
                 .perform(click())
@@ -59,12 +59,12 @@ class ItemBehaviorTest {
                 .perform(DrawerActions.open())
                 .check(matches(DrawerMatchers.isOpen()))
 
-        onView(withText(R.string.tags_title))
+        onView(withText(R.string.ingredients_title))
                 .perform(click())
-        onView(withText(StringStartsWith(tag)))
+        onView(withText(StringStartsWith(ingredient)))
                 .check(matches(isDisplayed()))
                 .perform(swipeRight())
-        onView(withText(tag))
+        onView(withText(ingredient))
                 .check(doesNotExist())
     }
 }

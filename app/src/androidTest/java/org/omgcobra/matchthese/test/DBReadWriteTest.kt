@@ -5,7 +5,7 @@ import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.hamcrest.Matchers.*
 import org.junit.runner.RunWith
-import org.omgcobra.matchthese.model.Item
+import org.omgcobra.matchthese.model.Recipe
 import java.io.IOException
 import java.lang.Exception
 
@@ -13,25 +13,25 @@ import org.hamcrest.core.Is.`is`
 import org.junit.*
 import org.junit.runners.MethodSorters
 import org.omgcobra.matchthese.dao.*
-import org.omgcobra.matchthese.model.ItemTagJoin
-import org.omgcobra.matchthese.model.Tag
+import org.omgcobra.matchthese.model.RecipeIngredientJoin
+import org.omgcobra.matchthese.model.Ingredient
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.DEFAULT)
 class DBReadWriteTest {
-    private lateinit var itemDao: ItemDao
-    private lateinit var tagDao: TagDao
-    private lateinit var itemTagJoinDao: ItemTagJoinDao
-    private lateinit var itemTagCompositeDao: ItemTagCompositeDao
+    private lateinit var recipeDao: RecipeDao
+    private lateinit var ingredientDao: IngredientDao
+    private lateinit var recipeIngredientJoinDao: RecipeIngredientJoinDao
+    private lateinit var recipeIngredientCompositeDao: RecipeIngredientCompositeDao
     private lateinit var db: AppDatabase
 
     @Before
     fun createDb() {
         db = AppDatabase.buildTest(ApplicationProvider.getApplicationContext())
-        itemDao = db.itemDao()
-        tagDao = db.tagDao()
-        itemTagJoinDao = db.itemTagJoinDao()
-        itemTagCompositeDao = db.itemTagCompositeDao()
+        recipeDao = db.recipeDao()
+        ingredientDao = db.ingredientDao()
+        recipeIngredientJoinDao = db.recipeIngredientJoinDao()
+        recipeIngredientCompositeDao = db.recipeIngredientCompositeDao()
     }
 
     @After
@@ -43,117 +43,117 @@ class DBReadWriteTest {
     @Test
     @Throws(Exception::class)
     fun testCRUD() {
-        val item = createItem("Tyler")
-        val tag = createTag("cool")
+        val recipe = createRecipe("Tyler")
+        val ingredient = createIngredient("cool")
 
-        readItem(item)
-        readTag(tag)
+        readRecipe(recipe)
+        readIngredient(ingredient)
 
-        joinItemAndTag(item, tag)
+        joinRecipeAndIngredient(recipe, ingredient)
 
-        checkJoin(item, tag)
+        checkJoin(recipe, ingredient)
 
-        updateItem(item, "Stephanie")
-        updateTag(tag, "awesome")
+        updateRecipe(recipe, "Stephanie")
+        updateIngredient(ingredient, "awesome")
 
-        checkJoin(item, tag)
+        checkJoin(recipe, ingredient)
 
-        deleteTag(tag)
-        assertThat(itemTagCompositeDao.loadItemWithTags(item.id).joinList as Collection<*>, `is`(empty()))
-        assertThat(itemTagCompositeDao.loadTagWithItems(tag.id), nullValue())
-        deleteItem(item)
+        deleteIngredient(ingredient)
+        assertThat(recipeIngredientCompositeDao.loadRecipeWithIngredients(recipe.id).joinList as Collection<*>, `is`(empty()))
+        assertThat(recipeIngredientCompositeDao.loadIngredientWithRecipes(ingredient.id), nullValue())
+        deleteItem(recipe)
     }
 
-    private fun joinItemAndTag(item: Item, tag: Tag) {
-        val id = itemTagJoinDao.insert(ItemTagJoin(item, tag))
+    private fun joinRecipeAndIngredient(recipe: Recipe, ingredient: Ingredient) {
+        val id = recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, ingredient))
         assertThat(id, greaterThan(0L))
     }
 
-    private fun checkJoin(item: Item, tag: Tag) {
-        val itemWithTags = itemTagCompositeDao.loadItemWithTags(item.id)
-        assertThat(itemWithTags.entity, equalTo(item))
-        assertThat(itemWithTags.joinList.map { it.tag!!.name }, contains(tag.name))
+    private fun checkJoin(recipe: Recipe, ingredient: Ingredient) {
+        val recipeWithIngredients = recipeIngredientCompositeDao.loadRecipeWithIngredients(recipe.id)
+        assertThat(recipeWithIngredients.entity, equalTo(recipe))
+        assertThat(recipeWithIngredients.joinList.map { it.ingredient!!.name }, contains(ingredient.name))
     }
 
-    private fun createItem(name: String): Item {
-        val item = Item(name)
-        val itemId = itemDao.insert(item)
-        assertThat(itemId, greaterThan(0L))
-        item.id = itemId
-        return item
+    private fun createRecipe(name: String): Recipe {
+        val recipe = Recipe(name)
+        val recipeId = recipeDao.insert(recipe)
+        assertThat(recipeId, greaterThan(0L))
+        recipe.id = recipeId
+        return recipe
     }
 
-    private fun createTag(name: String): Tag {
-        val tag = Tag(name)
-        val tagId = tagDao.insert(tag)
-        assertThat(tagId, greaterThan(0L))
-        tag.id = tagId
-        return tag
+    private fun createIngredient(name: String): Ingredient {
+        val ingredient = Ingredient(name)
+        val ingredientId = ingredientDao.insert(ingredient)
+        assertThat(ingredientId, greaterThan(0L))
+        ingredient.id = ingredientId
+        return ingredient
     }
 
-    private fun readItem(item: Item) {
-        val byId = itemDao.load(item.id)
-        assertThat(byId, equalTo(item))
+    private fun readRecipe(recipe: Recipe) {
+        val byId = recipeDao.load(recipe.id)
+        assertThat(byId, equalTo(recipe))
 
-        val byName = itemDao.getByName(item.name)
-        assertThat(byName, equalTo(item))
+        val byName = recipeDao.getByName(recipe.name)
+        assertThat(byName, equalTo(recipe))
     }
 
-    private fun readTag(tag: Tag) {
-        val byId = tagDao.load(tag.id)
-        assertThat(byId, equalTo(tag))
+    private fun readIngredient(ingredient: Ingredient) {
+        val byId = ingredientDao.load(ingredient.id)
+        assertThat(byId, equalTo(ingredient))
 
-        val byName = tagDao.getByName(tag.name)
-        assertThat(byName, equalTo(tag))
+        val byName = ingredientDao.getByName(ingredient.name)
+        assertThat(byName, equalTo(ingredient))
     }
 
-    private fun updateItem(item: Item, name: String) {
-        val oldName = item.name
-        item.name = name
-        itemDao.update(item)
+    private fun updateRecipe(recipe: Recipe, name: String) {
+        val oldName = recipe.name
+        recipe.name = name
+        recipeDao.update(recipe)
 
-        val byId = itemDao.load(item.id)
-        assertThat(byId, equalTo(item))
+        val byId = recipeDao.load(recipe.id)
+        assertThat(byId, equalTo(recipe))
 
-        val byName = itemDao.getByName(oldName)
+        val byName = recipeDao.getByName(oldName)
         assertThat(byName, nullValue())
     }
 
-    private fun updateTag(tag: Tag, name: String) {
-        val oldName = tag.name
-        tag.name = name
-        tagDao.update(tag)
+    private fun updateIngredient(ingredient: Ingredient, name: String) {
+        val oldName = ingredient.name
+        ingredient.name = name
+        ingredientDao.update(ingredient)
 
-        val byId = tagDao.load(tag.id)
-        assertThat(byId, equalTo(tag))
+        val byId = ingredientDao.load(ingredient.id)
+        assertThat(byId, equalTo(ingredient))
 
-        val byName = tagDao.getByName(oldName)
+        val byName = ingredientDao.getByName(oldName)
         assertThat(byName, nullValue())
     }
 
-    private fun deleteItem(item: Item) {
-        val id = item.id
-        val name = item.name
-        itemDao.delete(item)
+    private fun deleteItem(recipe: Recipe) {
+        val id = recipe.id
+        val name = recipe.name
+        recipeDao.delete(recipe)
 
-        val byId = itemDao.load(id)
+        val byId = recipeDao.load(id)
         assertThat(byId, nullValue())
 
-        val byName = itemDao.getByName(name)
+        val byName = recipeDao.getByName(name)
         assertThat(byName, nullValue())
 
-        assertThat(itemTagCompositeDao.loadItemWithTags(item.id), nullValue())
+        assertThat(recipeIngredientCompositeDao.loadRecipeWithIngredients(recipe.id), nullValue())
     }
 
-    private fun deleteTag(tag: Tag) {
-        val id = tag.id
-        val name = tag.name
-        tagDao.delete(tag)
+    private fun deleteIngredient(ingredient: Ingredient) {
+        val id = ingredient.id
+        val name = ingredient.name
+        ingredientDao.delete(ingredient)
 
-        val byId = tagDao.load(id)
+        val byId = ingredientDao.load(id)
         assertThat(byId, nullValue())
 
-        val byName = tagDao.getByName(name)
+        val byName = ingredientDao.getByName(name)
         assertThat(byName, nullValue())
     }
 }

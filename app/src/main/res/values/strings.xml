@@ -1,21 +1,21 @@
 <resources>
   <string name="app_name">MatchThese</string>
 
-  <string name="items_title">Items</string>
-  <string name="tags_title">Tags</string>
+  <string name="recipes_title">Recipes</string>
+  <string name="ingredients_title">Ingredients</string>
   <string name="add_btn_text">Add</string>
   <string name="name">Name</string>
   <string name="save">Save</string>
   <string name="cancel">Cancel</string>
-  <string name="dialog_item_title">Item</string>
-    <string name="delete_item">Delete item</string>
-    <string name="delete_item_confirm">Delete this item?</string>
+  <string name="dialog_recipe_title">Recipe</string>
+    <string name="delete_recipe">Delete recipe</string>
+    <string name="delete_recipe_confirm">Delete this recipe?</string>
   <string name="delete">Delete</string>
-    <string name="add_item_title">Add Item</string>
-    <string name="tags">Tags</string>
+    <string name="add_recipe_title">Add Recipe</string>
+    <string name="ingredients">Ingredients</string>
     <string name="drag_handle">Drag handle</string>
-    <string name="items">Items</string>
-  <string name="item_edit_title">Edit Item</string>
-  <string name="tag_edit_title">Edit Tag</string>
+    <string name="recipes">Items</string>
+  <string name="recipe_edit_title">Edit Recipe</string>
+  <string name="ingredient_edit_title">Edit Ingredient</string>
   <string name="remove">Remove</string>
 </resources>

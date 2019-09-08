@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(),
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
         val appBarConfiguration = AppBarConfiguration(
-                setOf(R.id.itemWithTagsFragment, R.id.tagWithItemsFragment),
+                setOf(R.id.recipeWithIngredientsFragment, R.id.ingredientWithRecipesFragment),
                 drawerLayout
         )
 
@@ -67,8 +67,8 @@ class MainActivity : AppCompatActivity(),
         drawerLayout.closeDrawers()
 
         when (menuItem.itemId) {
-            R.id.menu_items -> navController.navigate(R.id.itemWithTagsFragment)
-            R.id.menu_tags -> navController.navigate(R.id.tagWithItemsFragment)
+            R.id.menu_recipes -> navController.navigate(R.id.recipeWithIngredientsFragment)
+            R.id.menu_ingredients -> navController.navigate(R.id.ingredientWithRecipesFragment)
         }
 
         return true
@@ -86,18 +86,18 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    fun onAddItemBtnClick(view: View) {
-        navController.navigate(R.id.edit_item)
+    fun onAddRecipeBtnClick(view: View) {
+        navController.navigate(R.id.edit_recipe)
     }
 
-    fun onAddTagBtnClick(view: View) {
-        navController.navigate(R.id.edit_tag)
+    fun onAddIngredientBtnClick(view: View) {
+        navController.navigate(R.id.edit_ingredient)
     }
 
     override fun updateListData() {
         listOf(
-                supportFragmentManager.findFragmentById(R.id.itemWithTagsFragment) as AbstractListFragment<*, *, *>?,
-                supportFragmentManager.findFragmentById(R.id.tagWithItemsFragment) as AbstractListFragment<*, *, *>?
+                supportFragmentManager.findFragmentById(R.id.recipeWithIngredientsFragment) as AbstractListFragment<*, *, *>?,
+                supportFragmentManager.findFragmentById(R.id.ingredientWithRecipesFragment) as AbstractListFragment<*, *, *>?
         ).forEach { it?.refreshListData() }
     }
 }

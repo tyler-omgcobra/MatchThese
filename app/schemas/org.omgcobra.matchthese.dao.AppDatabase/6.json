@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "e73e2f1b493e8f8cd4185de3fa030717",
+    "identityHash": "e3ebba155df8da2002b5bfe5811ea6ba",
     "entities": [
       {
-        "tableName": "Item",
+        "tableName": "Recipe",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
@@ -29,20 +29,20 @@
         },
         "indices": [
           {
-            "name": "index_Item_id_name",
+            "name": "index_Recipe_id_name",
             "unique": true,
             "columnNames": [
               "id",
               "name"
             ],
-            "createSql": "CREATE UNIQUE INDEX `index_Item_id_name` ON `${TABLE_NAME}` (`id`, `name`)"
+            "createSql": "CREATE UNIQUE INDEX `index_Recipe_id_name` ON `${TABLE_NAME}` (`id`, `name`)"
           }
         ],
         "foreignKeys": []
       },
       {
-        "tableName": "ItemTagJoin",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `itemname` TEXT NOT NULL, `itemid` INTEGER NOT NULL, `tagname` TEXT, `tagid` INTEGER, FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "tableName": "RecipeIngredientJoin",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `recipename` TEXT NOT NULL, `recipeid` INTEGER NOT NULL, `ingredientname` TEXT, `ingredientid` INTEGER, FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -51,26 +51,26 @@
             "notNull": true
           },
           {
-            "fieldPath": "item.name",
-            "columnName": "itemname",
+            "fieldPath": "recipe.name",
+            "columnName": "recipename",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "item.id",
-            "columnName": "itemid",
+            "fieldPath": "recipe.id",
+            "columnName": "recipeid",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "tag.name",
-            "columnName": "tagname",
+            "fieldPath": "ingredient.name",
+            "columnName": "ingredientname",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "tag.id",
-            "columnName": "tagid",
+            "fieldPath": "ingredient.id",
+            "columnName": "ingredientid",
             "affinity": "INTEGER",
             "notNull": false
           }
@@ -83,25 +83,25 @@
         },
         "indices": [
           {
-            "name": "index_ItemTagJoin_itemid_itemname_tagid_tagname",
+            "name": "index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname",
             "unique": true,
             "columnNames": [
-              "itemid",
-              "itemname",
-              "tagid",
-              "tagname"
+              "recipeid",
+              "recipename",
+              "ingredientid",
+              "ingredientname"
             ],
-            "createSql": "CREATE UNIQUE INDEX `index_ItemTagJoin_itemid_itemname_tagid_tagname` ON `${TABLE_NAME}` (`itemid`, `itemname`, `tagid`, `tagname`)"
+            "createSql": "CREATE UNIQUE INDEX `index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname` ON `${TABLE_NAME}` (`recipeid`, `recipename`, `ingredientid`, `ingredientname`)"
           }
         ],
         "foreignKeys": [
           {
-            "table": "Tag",
+            "table": "Ingredient",
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "tagid",
-              "tagname"
+              "ingredientid",
+              "ingredientname"
             ],
             "referencedColumns": [
               "id",
@@ -109,12 +109,12 @@
             ]
           },
           {
-            "table": "Item",
+            "table": "Recipe",
             "onDelete": "CASCADE",
             "onUpdate": "CASCADE",
             "columns": [
-              "itemid",
-              "itemname"
+              "recipeid",
+              "recipename"
             ],
             "referencedColumns": [
               "id",
@@ -124,7 +124,7 @@
         ]
       },
       {
-        "tableName": "Tag",
+        "tableName": "Ingredient",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
           {
@@ -148,13 +148,13 @@
         },
         "indices": [
           {
-            "name": "index_Tag_id_name",
+            "name": "index_Ingredient_id_name",
             "unique": true,
             "columnNames": [
               "id",
               "name"
             ],
-            "createSql": "CREATE UNIQUE INDEX `index_Tag_id_name` ON `${TABLE_NAME}` (`id`, `name`)"
+            "createSql": "CREATE UNIQUE INDEX `index_Ingredient_id_name` ON `${TABLE_NAME}` (`id`, `name`)"
           }
         ],
         "foreignKeys": []
@@ -162,7 +162,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e73e2f1b493e8f8cd4185de3fa030717\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e3ebba155df8da2002b5bfe5811ea6ba\")"
     ]
   }
 }
