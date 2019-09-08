@@ -44,7 +44,7 @@ class ItemBehaviorTest {
                 .perform(typeText(name))
         onView(withId(R.id.edit_list))
                 .check(matches(isDisplayed()))
-                .perform(typeText(tag))
+                .perform(typeText("$tag,"))
         onView(withId(R.id.action_save))
                 .check(matches(isDisplayed()))
                 .perform(click())
