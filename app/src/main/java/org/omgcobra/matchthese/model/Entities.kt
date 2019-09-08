@@ -43,7 +43,8 @@ data class Ingredient(override var name: String): NamedEntity<Ingredient>() {
         ])
 data class RecipeIngredientJoin(
         @Embedded(prefix = "recipe") val recipe: Recipe,
-        @Embedded(prefix = "ingredient") val ingredient: Ingredient?
+        @Embedded(prefix = "ingredient") val ingredient: Ingredient?,
+        val amount: String
 ): AbstractEntity<RecipeIngredientJoin>(0L)
 
 class RecipeWithIngredients(entity: Recipe): CompositeNamedListEntity<Recipe, Ingredient>(entity) {

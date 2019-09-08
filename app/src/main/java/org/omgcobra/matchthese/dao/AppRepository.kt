@@ -62,7 +62,7 @@ class IngredientRecipeTask(private val recipeIngredientJoinDao: RecipeIngredient
         }
 
         recipesWithIngredients.filter { !it.joinList.map { recipeIngredientJoin -> recipeIngredientJoin.ingredient!!.name }.contains(ingredientName) }
-                .forEach { recipeIngredientJoinDao.insert(RecipeIngredientJoin(it.entity, ingredient)) }
+                .forEach { recipeIngredientJoinDao.insert(RecipeIngredientJoin(it.entity, ingredient, "")) }
         return null
     }
 }
@@ -85,7 +85,7 @@ class RecipeIngredientTask(private val recipeIngredientJoinDao: RecipeIngredient
         }
 
         ingredientsWithRecipes.filter { !it.joinList.map { recipeIngredientJoin -> recipeIngredientJoin.recipe.name }.contains(recipeName) }
-                .forEach { recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, it.entity)) }
+                .forEach { recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, it.entity, "")) }
         return null
     }
 }

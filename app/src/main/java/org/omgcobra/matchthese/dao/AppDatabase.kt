@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import org.omgcobra.matchthese.model.*
 import kotlin.reflect.KClass
 
-@Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 7)
+@Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 8)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
     abstract fun recipeIngredientCompositeDao(): RecipeIngredientCompositeDao
@@ -118,6 +118,11 @@ abstract class AppDatabase : RoomDatabase() {
                         database.execSQL("ALTER TABLE Item RENAME TO Recipe")
                         database.execSQL("ALTER TABLE Tag RENAME TO Ingredient")
                         database.execSQL("DROP TABLE ItemTagJoin")
+                    }
+                },
+                object : DatabaseMigration(7, 8) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE RecipeIngredientJoin ADD COLUMN `amount` TEXT NOT NULL DEFAULT ''")
                     }
                 }
         )

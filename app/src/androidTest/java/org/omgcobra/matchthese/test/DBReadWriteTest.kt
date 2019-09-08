@@ -65,7 +65,7 @@ class DBReadWriteTest {
     }
 
     private fun joinRecipeAndIngredient(recipe: Recipe, ingredient: Ingredient) {
-        val id = recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, ingredient))
+        val id = recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, ingredient, ""))
         assertThat(id, greaterThan(0L))
     }
 
