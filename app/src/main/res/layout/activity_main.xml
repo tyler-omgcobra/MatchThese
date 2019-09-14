@@ -23,6 +23,10 @@
         <fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginStart="?listPreferredItemPaddingLeft"
+            android:layout_marginEnd="?listPreferredItemPaddingRight"
+            android:layout_marginLeft="?listPreferredItemPaddingLeft"
+            android:layout_marginRight="?listPreferredItemPaddingRight"
             android:id="@+id/nav_host_fragment"
             android:name="androidx.navigation.fragment.NavHostFragment"
             app:navGraph="@navigation/nav_graph"

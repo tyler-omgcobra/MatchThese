@@ -13,9 +13,9 @@ class AppRepository {
 
         fun getRecipesWithIngredients() = allRecipesWithIngredients
         fun getIngredientsWithRecipes() = allIngredientsWithRecipes
-        fun ensureIngredientInRecipe(recipe: CompositeNamedListEntity<Recipe, Ingredient>, ingredientName: String) = IngredientRecipeTask(db.recipeIngredientJoinDao(), db.ingredientDao(), ingredientName).execute(recipe)
+        fun ensureIngredientInRecipe(recipe: CompositeNamedListEntity<Recipe, Ingredient>, ingredientName: String, amount: String) = IngredientRecipeTask(db.recipeIngredientJoinDao(), db.ingredientDao(), ingredientName, amount).execute(recipe)
         fun removeIngredientFromRecipe(recipe: CompositeNamedListEntity<Recipe, Ingredient>, ingredientName: String) = RemoveIngredientTask(db.recipeIngredientJoinDao(), db.ingredientDao(), ingredientName).execute(recipe)
-        fun ensureRecipeHasIngredient(ingredient: CompositeNamedListEntity<Ingredient, Recipe>, recipeName: String) = RecipeIngredientTask(db.recipeIngredientJoinDao(), db.recipeDao(), recipeName).execute(ingredient)
+        fun ensureRecipeHasIngredient(ingredient: CompositeNamedListEntity<Ingredient, Recipe>, recipeName: String, amount: String) = RecipeIngredientTask(db.recipeIngredientJoinDao(), db.recipeDao(), recipeName, amount).execute(ingredient)
         fun removeRecipeFromIngredient(ingredient: CompositeNamedListEntity<Ingredient, Recipe>, recipeName: String) = RemoveRecipeTask(db.recipeIngredientJoinDao(), db.recipeDao(), recipeName).execute(ingredient)
         inline fun <reified E: AbstractEntity<E>> getAll() = db.dao(E::class).getAll()
         inline fun <reified E: AbstractEntity<E>> deleteAll() = DeleteAllAsyncTask(db.dao(E::class)).execute()!!
@@ -53,7 +53,7 @@ class DeleteAllAsyncTask<E: AbstractEntity<E>>(private val dao: AbstractDao<E>):
     }
 }
 
-class IngredientRecipeTask(private val recipeIngredientJoinDao: RecipeIngredientJoinDao, private val ingredientDao: IngredientDao, private val ingredientName: String): AsyncTask<CompositeNamedListEntity<Recipe, Ingredient>, Void, Void>() {
+class IngredientRecipeTask(private val recipeIngredientJoinDao: RecipeIngredientJoinDao, private val ingredientDao: IngredientDao, private val ingredientName: String, private val amount: String): AsyncTask<CompositeNamedListEntity<Recipe, Ingredient>, Void, Void>() {
     override fun doInBackground(vararg recipesWithIngredients: CompositeNamedListEntity<Recipe, Ingredient>): Void? {
         val ingredient = ingredientDao.getByName(ingredientName) ?: Ingredient(ingredientName)
 
@@ -61,8 +61,15 @@ class IngredientRecipeTask(private val recipeIngredientJoinDao: RecipeIngredient
             ingredient.id = ingredientDao.insert(ingredient)
         }
 
-        recipesWithIngredients.filter { !it.joinList.map { recipeIngredientJoin -> recipeIngredientJoin.ingredient!!.name }.contains(ingredientName) }
-                .forEach { recipeIngredientJoinDao.insert(RecipeIngredientJoin(it.entity, ingredient, "")) }
+        recipesWithIngredients.forEach {
+            if (it.joinList.any { recipeIngredientJoin -> recipeIngredientJoin.ingredient!!.name == ingredientName }) {
+                val byRecipeAndIngredient = recipeIngredientJoinDao.getByRecipeAndIngredient(it.entity.id, ingredient.id)!!
+                byRecipeAndIngredient.amount = amount
+                recipeIngredientJoinDao.update(byRecipeAndIngredient)
+            } else {
+                recipeIngredientJoinDao.insert(RecipeIngredientJoin(it.entity, ingredient, amount))
+            }
+        }
         return null
     }
 }
@@ -70,13 +77,13 @@ class IngredientRecipeTask(private val recipeIngredientJoinDao: RecipeIngredient
 class RemoveIngredientTask(private val recipeIngredientJoinDao: RecipeIngredientJoinDao, private val ingredientDao: IngredientDao, private val ingredientName: String): AsyncTask<CompositeNamedListEntity<Recipe, Ingredient>, Void, Void>() {
     override fun doInBackground(vararg recipesWithIngredients: CompositeNamedListEntity<Recipe, Ingredient>): Void? {
         val ingredient = ingredientDao.getByName(ingredientName)
-        recipesWithIngredients.filter { it.joinList.map { recipeIngredientJoin -> recipeIngredientJoin.ingredient!!.name }.contains(ingredientName) }
+        recipesWithIngredients.filter { it.joinList.any { recipeIngredientJoin -> recipeIngredientJoin.ingredient!!.name == ingredientName} }
                 .forEach { recipeIngredientJoinDao.delete(recipeIngredientJoinDao.getByRecipeAndIngredient(it.entity.id, ingredient!!.id)!!) }
         return null
     }
 }
 
-class RecipeIngredientTask(private val recipeIngredientJoinDao: RecipeIngredientJoinDao, private val recipeDao: RecipeDao, private val recipeName: String): AsyncTask<CompositeNamedListEntity<Ingredient, Recipe>, Void, Void>() {
+class RecipeIngredientTask(private val recipeIngredientJoinDao: RecipeIngredientJoinDao, private val recipeDao: RecipeDao, private val recipeName: String, private val amount: String): AsyncTask<CompositeNamedListEntity<Ingredient, Recipe>, Void, Void>() {
     override fun doInBackground(vararg ingredientsWithRecipes: CompositeNamedListEntity<Ingredient, Recipe>): Void? {
         val recipe = recipeDao.getByName(recipeName) ?: Recipe(recipeName)
 
@@ -84,8 +91,16 @@ class RecipeIngredientTask(private val recipeIngredientJoinDao: RecipeIngredient
             recipe.id = recipeDao.insert(recipe)
         }
 
-        ingredientsWithRecipes.filter { !it.joinList.map { recipeIngredientJoin -> recipeIngredientJoin.recipe.name }.contains(recipeName) }
-                .forEach { recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, it.entity, "")) }
+        ingredientsWithRecipes.forEach {
+            if (it.joinList.any { recipeIngredientJoin -> recipeIngredientJoin.recipe.name == recipeName }) {
+                val byRecipeAndIngredient = recipeIngredientJoinDao.getByRecipeAndIngredient(recipe.id, it.entity.id)!!
+                byRecipeAndIngredient.amount = amount
+                recipeIngredientJoinDao.update(byRecipeAndIngredient)
+            } else {
+                recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, it.entity, amount))
+            }
+        }
+
         return null
     }
 }
@@ -93,7 +108,7 @@ class RecipeIngredientTask(private val recipeIngredientJoinDao: RecipeIngredient
 class RemoveRecipeTask(private val recipeIngredientJoinDao: RecipeIngredientJoinDao, private val recipeDao: RecipeDao, private val recipeName: String): AsyncTask<CompositeNamedListEntity<Ingredient, Recipe>, Void, Void>() {
     override fun doInBackground(vararg ingredientsWithRecipes: CompositeNamedListEntity<Ingredient, Recipe>): Void? {
         val recipe = recipeDao.getByName(recipeName)
-        ingredientsWithRecipes.filter { it.joinList.map { recipeIngredientJoin -> recipeIngredientJoin.recipe.name }.contains(recipeName) }
+        ingredientsWithRecipes.filter { it.joinList.any { recipeIngredientJoin -> recipeIngredientJoin.recipe.name == recipeName} }
                 .forEach { recipeIngredientJoinDao.delete(recipeIngredientJoinDao.getByRecipeAndIngredient(recipe!!.id, it.entity.id)!!) }
         return null
     }

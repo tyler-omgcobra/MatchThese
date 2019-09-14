@@ -1,35 +1,22 @@
 package org.omgcobra.matchthese.fragments.ingredient
 
-import android.view.*
-import androidx.lifecycle.observe
+import android.widget.ArrayAdapter
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.AppRepository
 import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
-import org.omgcobra.matchthese.model.Recipe
+import org.omgcobra.matchthese.data.RecipeRowEditAdapter
 import org.omgcobra.matchthese.model.Ingredient
 import org.omgcobra.matchthese.model.IngredientWithRecipes
+import org.omgcobra.matchthese.model.Recipe
 
 class IngredientEditFragment: CompositeListEntityEditFragment<Ingredient, Recipe>() {
     override val hintId = R.string.recipes
-    override val layoutId = R.layout.fragment_edit_ingredient
+    override val liveData = AppRepository.getAll<Recipe>()
 
-    override fun initEntity(view: View) {
-        nameEditText.setText(listEntity?.entity?.name)
-        val adapter = createAdapter()
-        setupListEditText(adapter)
-        listEditText.setText("%s,".format(listEntity?.joinList?.joinToString { it.recipe.toString() }))
-        listEntity?.joinList?.forEach {
-            listEditText.addObjectSync(it.recipe)
-        }
-        AppRepository.getAll<Recipe>().observe(this) { itemList ->
-            adapter.clear()
-            adapter.addAll(itemList)
-        }
-    }
+    override fun createRowEditAdapter(entityAdapter: ArrayAdapter<Recipe>) = RecipeRowEditAdapter(requireContext(), entityAdapter)
 
     override fun saveItem() {
         val name = nameEditText.text.toString()
-        val items = listEditText.objects
         val ingredient = listEntity?.entity ?: Ingredient(name)
         ingredient.name = name
 
@@ -40,10 +27,9 @@ class IngredientEditFragment: CompositeListEntityEditFragment<Ingredient, Recipe
             AppRepository.insert(ingredient)
         }
 
-        listEntity!!.joinList.filter { !items.contains(it.recipe) }
+        listEntity!!.joinList.filter { join -> !rowEditAdapter.dataSet.any { it.recipe.name == join.recipe.name } }
                 .forEach { AppRepository.removeRecipeFromIngredient(listEntity!!, it.recipe.name) }
-
-        items.forEach { AppRepository.ensureRecipeHasIngredient(listEntity!!, it.name) }
+        rowEditAdapter.dataSet.forEach { AppRepository.ensureRecipeHasIngredient(listEntity!!, it.recipe.name, it.amount)}
 
         super.saveItem()
     }

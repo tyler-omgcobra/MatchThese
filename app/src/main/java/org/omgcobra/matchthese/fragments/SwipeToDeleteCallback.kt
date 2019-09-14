@@ -6,11 +6,19 @@ import android.graphics.Paint
 import android.graphics.RectF
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import org.omgcobra.matchthese.data.CompositeListEntityAdapter
 
-class SwipeToDeleteCallback(private val adapter: CompositeListEntityAdapter<*, *>): ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.START or ItemTouchHelper.END) {
-    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = adapter.onItemMove(viewHolder.adapterPosition, target.adapterPosition)
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) = adapter.onItemSwipe(viewHolder.adapterPosition)
+class SwipeToDeleteCallback<A>(private val adapter: A): ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.START or ItemTouchHelper.END) {
+    override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        return when (adapter) {
+            is Movable -> adapter.onItemMove(viewHolder.adapterPosition, target.adapterPosition)
+            else -> false
+        }
+    }
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        when (adapter) {
+            is Swipable -> adapter.onItemSwipe(viewHolder.adapterPosition)
+        }
+    }
 
     override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
@@ -28,4 +36,12 @@ class SwipeToDeleteCallback(private val adapter: CompositeListEntityAdapter<*, *
 
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
+}
+
+interface Movable {
+    fun onItemMove(from: Int, to: Int): Boolean
+}
+
+interface Swipable {
+    fun onItemSwipe(position: Int)
 }

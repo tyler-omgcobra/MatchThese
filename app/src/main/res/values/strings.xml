@@ -18,4 +18,8 @@
   <string name="recipe_edit_title">Edit Recipe</string>
   <string name="ingredient_edit_title">Edit Ingredient</string>
   <string name="remove">Remove</string>
+    <string name="ingredient">Ingredient</string>
+    <string name="amount">Amount</string>
+    <string name="add_row">Add row</string>
+    <string name="recipe">Recipe</string>
 </resources>

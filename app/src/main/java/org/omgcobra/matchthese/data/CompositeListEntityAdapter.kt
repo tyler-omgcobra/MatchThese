@@ -7,15 +7,15 @@ import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
+import org.omgcobra.matchthese.fragments.Swipable
 import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.NamedEntity
-import java.util.Collections
 
-abstract class CompositeListEntityAdapter<E: NamedEntity<E>, L: NamedEntity<L>>(internal val context: Context) : RecyclerView.Adapter<CompositeListEntityViewHolder>() {
+abstract class CompositeListEntityAdapter<E: NamedEntity<E>, L: NamedEntity<L>>(internal val context: Context) : RecyclerView.Adapter<CompositeListEntityViewHolder>(), Swipable {
 
-    var dataSet: List<CompositeNamedListEntity<E, L>> = emptyList()
+    var dataSet: ArrayList<CompositeNamedListEntity<E, L>> = ArrayList()
         set(list) {
-            field = list.sorted()
+            field = ArrayList(list.sorted())
             notifyDataSetChanged()
         }
     protected var deletedItem: CompositeNamedListEntity<E, *>? = null
@@ -40,25 +40,11 @@ abstract class CompositeListEntityAdapter<E: NamedEntity<E>, L: NamedEntity<L>>(
     override fun getItemCount(): Int = dataSet.size
 
     open fun delete(position: Int) {
-        deletedItem = dataSet[position]
+        deletedItem = dataSet.removeAt(position)
     }
 
-    fun onItemSwipe(position: Int) {
+    override fun onItemSwipe(position: Int) {
         delete(position)
         notifyItemRemoved(position)
-    }
-
-    fun onItemMove(from: Int, to: Int): Boolean {
-        if (from < to) {
-            for (i in from until to) {
-                Collections.swap(dataSet, i, i + 1)
-            }
-        } else {
-            for (i in from until to) {
-                Collections.swap(dataSet, i, i - 1)
-            }
-        }
-        notifyItemMoved(from, to)
-        return true
     }
 }

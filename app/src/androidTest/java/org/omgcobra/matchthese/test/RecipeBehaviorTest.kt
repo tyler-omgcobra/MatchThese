@@ -34,12 +34,15 @@ class RecipeBehaviorTest {
     private lateinit var ingredient: String
 
     @get:Rule
-    var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java)
+    var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java, false, false)
 
     @Before
-    fun initValidString() {
+    fun setUp() {
         name = UUID.randomUUID().toString()
         ingredient = UUID.randomUUID().toString()
+
+        MatchTheseApplication.getInstance().test()
+        activityRule.launchActivity(null)
     }
 
     @Test
@@ -60,9 +63,12 @@ class RecipeBehaviorTest {
                 .check(matches(isDisplayed()))
                 .perform(typeText(name))
 
-        onView(withId(R.id.edit_list))
-                .check(matches(isDisplayed()))
-                .perform(typeText("$ingredient,"))
+        onView(withId(R.id.add_row))
+                .perform(click())
+
+        onView(withId(R.id.auto_complete_text))
+                .perform(click())
+                .perform(typeText(ingredient))
 
         onView(withId(R.id.action_save))
                 .check(matches(isDisplayed()))

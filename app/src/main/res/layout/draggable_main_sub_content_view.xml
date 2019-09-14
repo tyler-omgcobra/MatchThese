@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/draggable_main_sub_content_view"
     android:layout_width="match_parent"
-    android:layout_height="?listPreferredItemHeight"
+    android:layout_height="wrap_content"
+    android:minHeight="?listPreferredItemHeight"
     android:clickable="true"
     android:focusable="true"
     android:background="?selectableItemBackground">
@@ -11,7 +12,7 @@
     <LinearLayout
         android:id="@+id/text_views"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

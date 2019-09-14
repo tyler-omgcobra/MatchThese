@@ -1,9 +1,6 @@
 package org.omgcobra.matchthese
 
 import android.app.Application
-import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import org.omgcobra.matchthese.dao.AppDatabase
 
 class MatchTheseApplication: Application() {
@@ -18,5 +15,9 @@ class MatchTheseApplication: Application() {
         super.onCreate()
         instance = this
         db = AppDatabase.build(applicationContext)
+    }
+
+    fun test() {
+        db = AppDatabase.buildTest(applicationContext)
     }
 }

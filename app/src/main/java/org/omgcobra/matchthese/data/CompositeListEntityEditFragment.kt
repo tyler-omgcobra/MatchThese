@@ -4,25 +4,32 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.tokenautocomplete.TokenCompleteTextView
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
+import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
 import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.NamedEntity
-import java.lang.ClassCastException
 
 abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity<L>>: Fragment() {
     protected lateinit var nameEditText: EditText
-    protected lateinit var listEditText: TokenCompleteTextView<L>
+    protected lateinit var listRecyclerView: RecyclerView
+    protected lateinit var rowEditAdapter: RowEditAdapter<L>
     protected var listEntity: CompositeNamedListEntity<E, L>? = null
     private lateinit var entitySavedListener: ListEntitySavedListener
 
-    abstract val hintId: Int
-    abstract val layoutId: Int
+    protected abstract val hintId: Int
+    protected abstract val liveData: LiveData<List<L>>
 
-    protected abstract fun initEntity(view: View)
+    abstract fun createRowEditAdapter(entityAdapter: ArrayAdapter<L>): RowEditAdapter<L>
 
     interface ListEntitySavedListener {
         fun updateListData()
@@ -33,18 +40,6 @@ abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity
         imm.hideSoftInputFromWindow(view!!.windowToken, 0)
         entitySavedListener.updateListData()
         findNavController().popBackStack()
-    }
-
-    protected fun createAdapter(): ArrayAdapter<L> {
-        val adapter = ArrayAdapter<L>(requireContext(), android.R.layout.simple_dropdown_item_1line, listOf())
-        adapter.setNotifyOnChange(true)
-        return adapter
-    }
-
-    protected fun <A> setupListEditText(adapter: A) where A : ListAdapter, A : Filterable {
-        listEditText.setAdapter(adapter)
-        listEditText.threshold = 1
-        listEditText.setTokenClickStyle(TokenCompleteTextView.TokenClickStyle.Delete)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -73,16 +68,27 @@ abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(layoutId, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_edit, container, false)
 
         listEntity = arguments?.get("listEntity") as CompositeNamedListEntity<E, L>?
         nameEditText = rootView.findViewById(R.id.edit_name)
-        listEditText = rootView.findViewById(R.id.edit_list)
-        listEditText.setHint(hintId)
+        listRecyclerView = rootView.findViewById(R.id.edit_recycler_view)
+        listRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        listRecyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+
+        val entityAdapter = ArrayAdapter<L>(requireContext(), android.R.layout.simple_dropdown_item_1line)
+        liveData.observe(this, Observer {
+            entityAdapter.clear()
+            entityAdapter.addAll(it)
+        })
+        rowEditAdapter = createRowEditAdapter(entityAdapter)
+        rowEditAdapter.dataSet = ArrayList(listEntity?.joinList ?: emptyList())
+        listRecyclerView.adapter = rowEditAdapter
+
+        val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(rowEditAdapter))
+        itemTouchHelper.attachToRecyclerView(listRecyclerView)
 
         nameEditText.setText(listEntity?.entity?.name)
-
-        initEntity(rootView)
 
         return rootView
     }
