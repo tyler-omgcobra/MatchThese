@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">MatchThese</string>
+  <string name="app_name">Recipe Matcher</string>
 
   <string name="recipes_title">Recipes</string>
   <string name="ingredients_title">Ingredients</string>
