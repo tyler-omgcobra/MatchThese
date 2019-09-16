@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.fragments.Swipable
@@ -46,5 +47,9 @@ abstract class CompositeListEntityAdapter<E: NamedEntity<E>, L: NamedEntity<L>>(
     override fun onItemSwipe(position: Int) {
         delete(position)
         notifyItemRemoved(position)
+    }
+
+    override fun createSwipeFlags(position: Int): Int {
+        return ItemTouchHelper.START or ItemTouchHelper.END
     }
 }

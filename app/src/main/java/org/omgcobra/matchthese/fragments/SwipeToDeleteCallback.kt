@@ -20,6 +20,13 @@ class SwipeToDeleteCallback<A>(private val adapter: A): ItemTouchHelper.SimpleCa
         }
     }
 
+    override fun getSwipeDirs(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        return when (adapter) {
+            is Swipable -> adapter.createSwipeFlags(viewHolder.adapterPosition)
+            else -> 0
+        }
+    }
+
     override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             val itemView = viewHolder.itemView
@@ -44,4 +51,5 @@ interface Movable {
 
 interface Swipable {
     fun onItemSwipe(position: Int)
+    fun createSwipeFlags(position: Int): Int
 }

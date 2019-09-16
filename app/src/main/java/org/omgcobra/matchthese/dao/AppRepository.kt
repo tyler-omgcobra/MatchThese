@@ -62,12 +62,12 @@ class IngredientRecipeTask(private val recipeIngredientJoinDao: RecipeIngredient
         }
 
         recipesWithIngredients.forEach {
-            if (it.joinList.any { recipeIngredientJoin -> recipeIngredientJoin.ingredient!!.name == ingredientName }) {
-                val byRecipeAndIngredient = recipeIngredientJoinDao.getByRecipeAndIngredient(it.entity.id, ingredient.id)!!
-                byRecipeAndIngredient.amount = amount
-                recipeIngredientJoinDao.update(byRecipeAndIngredient)
-            } else {
-                recipeIngredientJoinDao.insert(RecipeIngredientJoin(it.entity, ingredient, amount))
+            when (val byRecipeAndIngredient = recipeIngredientJoinDao.getByRecipeAndIngredient(it.entity.id, ingredient.id)) {
+                null -> recipeIngredientJoinDao.insert(RecipeIngredientJoin(it.entity, ingredient, amount))
+                else -> {
+                    byRecipeAndIngredient.amount = amount
+                    recipeIngredientJoinDao.update(byRecipeAndIngredient)
+                }
             }
         }
         return null

@@ -9,6 +9,7 @@ import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.dao.AppRepository
@@ -55,7 +56,7 @@ abstract class RowEditAdapter<L: NamedEntity<L>>(internal val context: Context, 
             is RowAddViewHolder -> {
                 holder.addRow.setOnClickListener{
                     dataSet.add(RecipeIngredientJoin(Recipe(""), Ingredient(""), ""))
-                    notifyItemInserted(position)
+                    notifyItemInserted(holder.adapterPosition)
                 }
             }
         }
@@ -65,6 +66,13 @@ abstract class RowEditAdapter<L: NamedEntity<L>>(internal val context: Context, 
         if (position < dataSet.size) {
             delete(position)
             notifyItemRemoved(position)
+        }
+    }
+
+    override fun createSwipeFlags(position: Int): Int {
+        return when (position) {
+            dataSet.size -> 0
+            else -> ItemTouchHelper.START or ItemTouchHelper.END
         }
     }
 

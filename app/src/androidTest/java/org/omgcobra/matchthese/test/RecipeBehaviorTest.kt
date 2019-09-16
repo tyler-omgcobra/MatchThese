@@ -30,16 +30,18 @@ import java.util.*
 @LargeTest
 class RecipeBehaviorTest {
 
-    private lateinit var name: String
+    private lateinit var recipe: String
     private lateinit var ingredient: String
+    private lateinit var ingredient2: String
 
     @get:Rule
     var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java, false, false)
 
     @Before
     fun setUp() {
-        name = UUID.randomUUID().toString()
+        recipe = UUID.randomUUID().toString()
         ingredient = UUID.randomUUID().toString()
+        ingredient2 = UUID.randomUUID().toString()
 
         MatchTheseApplication.getInstance().test()
         activityRule.launchActivity(null)
@@ -47,13 +49,15 @@ class RecipeBehaviorTest {
 
     @Test
     fun recipeTest() {
-        addRecipe()
-        checkIngredientHasRecipe()
-        deleteRecipe()
-        deleteIngredient()
+        addRecipe(recipe)
+        checkIngredientHasRecipe(ingredient)
+        checkIngredientHasRecipe(ingredient2)
+        deleteRecipe(recipe)
+        deleteIngredient(ingredient)
+        deleteIngredient(ingredient2)
     }
 
-    private fun addRecipe() {
+    private fun addRecipe(name: String) {
         recipeView()
 
         onView(withId(R.id.floating_action_button_recipe))
@@ -70,22 +74,31 @@ class RecipeBehaviorTest {
                 .perform(click())
                 .perform(typeText(ingredient))
 
+        onView(withId(R.id.add_row))
+                .perform(click())
+
+        onView(allOf(withId(R.id.auto_complete_text), withText("")))
+                .perform(click())
+                .perform(typeText(ingredient2))
+
         onView(withId(R.id.action_save))
                 .check(matches(isDisplayed()))
                 .perform(click())
     }
 
-    private fun checkIngredientHasRecipe() {
+    private fun checkIngredientHasRecipe(name: String) {
         ingredientView()
 
-        onView(allOf(withId(R.id.main_text), withText("$ingredient (1)")))
+        val mainText = allOf(withId(R.id.main_text), withText("$name (1)"))
+
+        onView(mainText)
                 .check(matches(isDisplayed()))
 
-        onView(allOf(withId(R.id.sub_text), withText(name)))
+        onView(allOf(withId(R.id.sub_text), withText(recipe), withParent(withChild(mainText))))
                 .check(matches(isDisplayed()))
     }
 
-    private fun deleteRecipe() {
+    private fun deleteRecipe(name: String) {
         recipeView()
 
         val mainTextWithName = allOf(withId(R.id.main_text), withText(name))
@@ -99,10 +112,10 @@ class RecipeBehaviorTest {
                 .check(doesNotExist())
     }
 
-    private fun deleteIngredient() {
+    private fun deleteIngredient(name: String) {
         ingredientView()
 
-        val mainTextStartsWith = allOf(withId(R.id.main_text), withText(StringStartsWith(ingredient)))
+        val mainTextStartsWith = allOf(withId(R.id.main_text), withText(StringStartsWith(name)))
         onView(mainTextStartsWith)
                 .check(matches(isDisplayed()))
                 .perform(swipeLeft())
@@ -131,10 +144,13 @@ class RecipeBehaviorTest {
         val ingredientDao = db.ingredientDao()
         val recipeDao = db.recipeDao()
 
-        val recipe = recipeDao.getByName(name)
+        val recipe = recipeDao.getByName(recipe)
         recipe?.let { recipeDao.delete(it) }
 
         val ingredient = ingredientDao.getByName(ingredient)
         ingredient?.let { ingredientDao.delete(it) }
+
+        val ingredient2 = ingredientDao.getByName(ingredient2)
+        ingredient2?.let { ingredientDao.delete(it) }
     }
 }
