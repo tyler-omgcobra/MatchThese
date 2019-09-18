@@ -18,6 +18,7 @@ import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
 import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.NamedEntity
+import org.omgcobra.matchthese.model.RecipeIngredientJoin
 
 abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity<L>>: Fragment() {
     protected lateinit var nameEditText: EditText
@@ -30,12 +31,42 @@ abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity
     protected abstract val liveData: LiveData<List<L>>
 
     abstract fun createRowEditAdapter(entityAdapter: ArrayAdapter<L>): RowEditAdapter<L>
+    abstract fun getEntity(name: String): E
+    abstract fun makeListEntity(entity: E): CompositeNamedListEntity<E, L>
+    abstract fun getListEntityName(join: RecipeIngredientJoin): String
+    abstract fun removeFromListEntity(name: String)
+    abstract fun addToListEntity(name: String, amount: String)
+    abstract fun insertEntity(entity: E)
+    abstract fun updateEntity(entity: E)
 
     interface ListEntitySavedListener {
         fun updateListData()
     }
 
-    protected open fun saveItem() {
+    private fun saveEntity(entity: E) {
+        if (listEntity != null) {
+            updateEntity(entity)
+        } else {
+            listEntity = makeListEntity(entity)
+            insertEntity(entity)
+        }
+    }
+
+    private fun saveListData() {
+        listEntity!!.joinList.filter { join -> !rowEditAdapter.dataSet.any { getListEntityName(it) == getListEntityName(join) } }
+                .forEach { removeFromListEntity(getListEntityName(it)) }
+        rowEditAdapter.dataSet.forEach { addToListEntity(getListEntityName(it), it.amount) }
+    }
+
+    private fun saveItem() {
+        val name = nameEditText.text.toString()
+        val entity = getEntity(name)
+        entity.name = name
+
+        saveEntity(entity)
+
+        saveListData()
+
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view!!.windowToken, 0)
         entitySavedListener.updateListData()

@@ -8,29 +8,31 @@ import org.omgcobra.matchthese.data.RecipeRowEditAdapter
 import org.omgcobra.matchthese.model.Ingredient
 import org.omgcobra.matchthese.model.IngredientWithRecipes
 import org.omgcobra.matchthese.model.Recipe
+import org.omgcobra.matchthese.model.RecipeIngredientJoin
 
 class IngredientEditFragment: CompositeListEntityEditFragment<Ingredient, Recipe>() {
     override val hintId = R.string.recipes
     override val liveData = AppRepository.getAll<Recipe>()
 
     override fun createRowEditAdapter(entityAdapter: ArrayAdapter<Recipe>) = RecipeRowEditAdapter(requireContext(), entityAdapter)
+    override fun getEntity(name: String) = listEntity?.entity ?: Ingredient(name)
+    override fun makeListEntity(entity: Ingredient) = IngredientWithRecipes(entity)
+    override fun getListEntityName(join: RecipeIngredientJoin) = join.recipe.name
 
-    override fun saveItem() {
-        val name = nameEditText.text.toString()
-        val ingredient = listEntity?.entity ?: Ingredient(name)
-        ingredient.name = name
-
-        if (listEntity != null) {
-            AppRepository.update(ingredient)
-        } else {
-            listEntity = IngredientWithRecipes(ingredient)
-            AppRepository.insert(ingredient)
-        }
-
-        listEntity!!.joinList.filter { join -> !rowEditAdapter.dataSet.any { it.recipe.name == join.recipe.name } }
-                .forEach { AppRepository.removeRecipeFromIngredient(listEntity!!, it.recipe.name) }
-        rowEditAdapter.dataSet.forEach { AppRepository.ensureRecipeHasIngredient(listEntity!!, it.recipe.name, it.amount)}
-
-        super.saveItem()
+    override fun insertEntity(entity: Ingredient) {
+        AppRepository.insert(entity)
     }
+
+    override fun updateEntity(entity: Ingredient) {
+        AppRepository.update(entity)
+    }
+
+    override fun addToListEntity(name: String, amount: String) {
+        AppRepository.ensureRecipeHasIngredient(listEntity!!, name, amount)
+    }
+
+    override fun removeFromListEntity(name: String) {
+        AppRepository.removeRecipeFromIngredient(listEntity!!, name)
+    }
+
 }
