@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.omgcobra.matchthese.model.*
 import kotlin.reflect.KClass
 
-@Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 8)
+@Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 10)
+@TypeConverters(AppTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
     abstract fun recipeIngredientCompositeDao(): RecipeIngredientCompositeDao
@@ -123,6 +125,62 @@ abstract class AppDatabase : RoomDatabase() {
                 object : DatabaseMigration(7, 8) {
                     override fun migrate(database: SupportSQLiteDatabase) {
                         database.execSQL("ALTER TABLE RecipeIngredientJoin ADD COLUMN `amount` TEXT NOT NULL DEFAULT ''")
+                    }
+                },
+                object : DatabaseMigration(8, 9) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE RecipeIngredientJoin RENAME TO RecipeIngredientJoinOld")
+                        database.execSQL("DROP INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname")
+                        database.execSQL("""
+                            CREATE TABLE IF NOT EXISTS RecipeIngredientJoin(
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `ingredientname` TEXT,
+                                `ingredientid` INTEGER,
+                                `recipename` TEXT NOT NULL,
+                                `recipeid` INTEGER NOT NULL,
+                                `amount` DOUBLE NOT NULL DEFAULT 1,
+                                `unit` TEXT NOT NULL DEFAULT '',
+                                FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
+                                FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
+                            )
+                        """)
+                        database.execSQL("CREATE UNIQUE INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname ON RecipeIngredientJoin(recipeid, recipename, ingredientid, ingredientname)")
+                        database.execSQL("""
+                            INSERT INTO RecipeIngredientJoin(ingredientname, ingredientid, recipename, recipeid, amount, unit)
+                            SELECT ingredientname, ingredientid, recipename, recipeid, cast(amount as decimal), amount
+                            FROM RecipeIngredientJoinOld
+                        """)
+                        database.execSQL("DROP TABLE RecipeIngredientJoinOld")
+                    }
+                },
+                object : DatabaseMigration(9, 10) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE Recipe ADD COLUMN `onShoppingList` INTEGER NOT NULL DEFAULT 0")
+                        database.execSQL("ALTER TABLE Ingredient ADD COLUMN `inPantry` INTEGER NOT NULL DEFAULT 0")
+                        database.execSQL("ALTER TABLE RecipeIngredientJoin RENAME TO RecipeIngredientJoinOld")
+                        database.execSQL("DROP INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname")
+                        database.execSQL("""
+                            CREATE TABLE IF NOT EXISTS RecipeIngredientJoin(
+                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                                `ingredientname` TEXT,
+                                `ingredientid` INTEGER,
+                                `ingredientinPantry` INTEGER,
+                                `recipename` TEXT NOT NULL,
+                                `recipeid` INTEGER NOT NULL,
+                                `recipeonShoppingList` INTEGER NOT NULL,
+                                `amount` DOUBLE NOT NULL DEFAULT 1,
+                                `unit` TEXT NOT NULL DEFAULT '',
+                                FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
+                                FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
+                            )
+                        """)
+                        database.execSQL("CREATE UNIQUE INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname ON RecipeIngredientJoin(recipeid, recipename, ingredientid, ingredientname)")
+                        database.execSQL("""
+                            INSERT INTO RecipeIngredientJoin(ingredientname, ingredientid, ingredientinPantry, recipename, recipeid, recipeonShoppingList, amount, unit)
+                            SELECT ingredientname, ingredientid, 0, recipename, recipeid, 0, cast(amount as decimal), amount
+                            FROM RecipeIngredientJoinOld
+                        """)
+                        database.execSQL("DROP TABLE RecipeIngredientJoinOld")
                     }
                 }
         )

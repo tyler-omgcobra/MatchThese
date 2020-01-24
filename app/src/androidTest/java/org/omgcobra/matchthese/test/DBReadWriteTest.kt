@@ -1,8 +1,14 @@
 package org.omgcobra.matchthese.test
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.hamcrest.Matchers.*
 import org.junit.runner.RunWith
 import org.omgcobra.matchthese.model.Recipe
@@ -15,6 +21,7 @@ import org.junit.runners.MethodSorters
 import org.omgcobra.matchthese.dao.*
 import org.omgcobra.matchthese.model.RecipeIngredientJoin
 import org.omgcobra.matchthese.model.Ingredient
+import java.math.BigDecimal
 
 @RunWith(AndroidJUnit4::class)
 @FixMethodOrder(MethodSorters.DEFAULT)
@@ -24,6 +31,9 @@ class DBReadWriteTest {
     private lateinit var recipeIngredientJoinDao: RecipeIngredientJoinDao
     private lateinit var recipeIngredientCompositeDao: RecipeIngredientCompositeDao
     private lateinit var db: AppDatabase
+
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun createDb() {
@@ -49,6 +59,9 @@ class DBReadWriteTest {
         readRecipe(recipe)
         readIngredient(ingredient)
 
+        readShoppingList(recipe)
+        readPantry(ingredient)
+
         joinRecipeAndIngredient(recipe, ingredient)
 
         checkJoin(recipe, ingredient)
@@ -65,7 +78,7 @@ class DBReadWriteTest {
     }
 
     private fun joinRecipeAndIngredient(recipe: Recipe, ingredient: Ingredient) {
-        val id = recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, ingredient, ""))
+        val id = recipeIngredientJoinDao.insert(RecipeIngredientJoin(recipe, ingredient, BigDecimal.ZERO, ""))
         assertThat(id, greaterThan(0L))
     }
 
@@ -105,6 +118,26 @@ class DBReadWriteTest {
 
         val byName = ingredientDao.getByName(ingredient.name)
         assertThat(byName, equalTo(ingredient))
+    }
+
+    private fun readShoppingList(recipe: Recipe) {
+        recipe.onShoppingList = true
+        recipeDao.update(recipe)
+
+        val shoppingList = recipeDao.getShoppingList()
+        shoppingList.observeForTesting {
+            assertThat(it, contains(recipe))
+        }
+    }
+
+    private fun readPantry(ingredient: Ingredient) {
+        ingredient.inPantry = true
+        ingredientDao.update(ingredient)
+
+        val pantry = ingredientDao.getPantry()
+        pantry.observeForTesting {
+            assertThat(it, contains(ingredient))
+        }
     }
 
     private fun updateRecipe(recipe: Recipe, name: String) {
@@ -155,5 +188,15 @@ class DBReadWriteTest {
 
         val byName = ingredientDao.getByName(name)
         assertThat(byName, nullValue())
+    }
+
+    private fun <T> LiveData<T>.observeForTesting(block: (it: T?) -> Unit) {
+        val observer = Observer<T> { }
+        try {
+            observeForever(observer)
+            block(value)
+        } finally {
+            removeObserver(observer)
+        }
     }
 }

@@ -12,5 +12,15 @@
             android:icon="@drawable/ic_label_black_24dp"
             android:title="@string/ingredients_title"
             />
+        <item
+            android:id="@+id/menu_pantry"
+            android:icon="@drawable/ic_kitchen_black_24dp"
+            android:title="@string/pantry_title"
+            />
+        <item
+            android:id="@+id/menu_cart"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="@string/shopping_list_title"
+            />
     </group>
 </menu>

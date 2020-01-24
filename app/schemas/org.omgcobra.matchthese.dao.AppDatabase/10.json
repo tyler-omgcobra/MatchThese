@@ -1,13 +1,19 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 8,
-    "identityHash": "f25ea94a7c24f2e73dedae4765279a9d",
+    "version": 10,
+    "identityHash": "ef6ab522fa489de6ed6899f931c7ef46",
     "entities": [
       {
         "tableName": "Recipe",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`onShoppingList` INTEGER NOT NULL, `name` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
+          {
+            "fieldPath": "onShoppingList",
+            "columnName": "onShoppingList",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "name",
             "columnName": "name",
@@ -42,7 +48,7 @@
       },
       {
         "tableName": "RecipeIngredientJoin",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`amount` REAL NOT NULL, `unit` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `recipename` TEXT NOT NULL, `recipeid` INTEGER NOT NULL, `ingredientname` TEXT, `ingredientid` INTEGER, FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`amount` REAL NOT NULL, `unit` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `recipeonShoppingList` INTEGER NOT NULL, `recipename` TEXT NOT NULL, `recipeid` INTEGER NOT NULL, `ingredientinPantry` INTEGER, `ingredientname` TEXT, `ingredientid` INTEGER, FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "amount",
@@ -63,6 +69,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "recipe.onShoppingList",
+            "columnName": "recipeonShoppingList",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
             "fieldPath": "recipe.name",
             "columnName": "recipename",
             "affinity": "TEXT",
@@ -73,6 +85,12 @@
             "columnName": "recipeid",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "ingredient.inPantry",
+            "columnName": "ingredientinPantry",
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "ingredient.name",
@@ -137,8 +155,14 @@
       },
       {
         "tableName": "Ingredient",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`inPantry` INTEGER NOT NULL, `name` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)",
         "fields": [
+          {
+            "fieldPath": "inPantry",
+            "columnName": "inPantry",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "name",
             "columnName": "name",
@@ -174,7 +198,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"f25ea94a7c24f2e73dedae4765279a9d\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ef6ab522fa489de6ed6899f931c7ef46\")"
     ]
   }
 }

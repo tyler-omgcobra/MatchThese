@@ -19,6 +19,7 @@ import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
 import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.NamedEntity
 import org.omgcobra.matchthese.model.RecipeIngredientJoin
+import java.math.BigDecimal
 
 abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity<L>>: Fragment() {
     protected lateinit var nameEditText: EditText
@@ -35,7 +36,7 @@ abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity
     abstract fun makeListEntity(entity: E): CompositeNamedListEntity<E, L>
     abstract fun getListEntityName(join: RecipeIngredientJoin): String
     abstract fun removeFromListEntity(name: String)
-    abstract fun addToListEntity(name: String, amount: String)
+    abstract fun addToListEntity(name: String, amount: BigDecimal, unit: String)
     abstract fun insertEntity(entity: E)
     abstract fun updateEntity(entity: E)
 
@@ -55,7 +56,7 @@ abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity
     private fun saveListData() {
         listEntity!!.joinList.filter { join -> !rowEditAdapter.dataSet.any { getListEntityName(it) == getListEntityName(join) } }
                 .forEach { removeFromListEntity(getListEntityName(it)) }
-        rowEditAdapter.dataSet.forEach { addToListEntity(getListEntityName(it), it.amount) }
+        rowEditAdapter.dataSet.forEach { addToListEntity(getListEntityName(it), it.amount, it.unit) }
     }
 
     private fun saveItem() {

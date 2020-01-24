@@ -19,4 +19,7 @@ interface RecipeDao: AbstractDao<Recipe> {
 
     @Query("SELECT * FROM Recipe WHERE name = :name")
     fun getByName(name: String): Recipe?
+
+    @Query("SELECT * FROM Recipe WHERE onShoppingList = 1")
+    fun getShoppingList(): LiveData<List<Recipe>>
 }

@@ -9,6 +9,7 @@ import org.omgcobra.matchthese.model.Ingredient
 import org.omgcobra.matchthese.model.Recipe
 import org.omgcobra.matchthese.model.RecipeIngredientJoin
 import org.omgcobra.matchthese.model.RecipeWithIngredients
+import java.math.BigDecimal
 
 class RecipeEditFragment: CompositeListEntityEditFragment<Recipe, Ingredient>() {
     override val hintId = R.string.ingredient
@@ -27,8 +28,8 @@ class RecipeEditFragment: CompositeListEntityEditFragment<Recipe, Ingredient>() 
         AppRepository.update(entity)
     }
 
-    override fun addToListEntity(name: String, amount: String) {
-        AppRepository.ensureIngredientInRecipe(listEntity!!, name, amount)
+    override fun addToListEntity(name: String, amount: BigDecimal, unit: String) {
+        AppRepository.ensureIngredientInRecipe(listEntity!!, name, amount, unit)
     }
 
     override fun removeFromListEntity(name: String) {

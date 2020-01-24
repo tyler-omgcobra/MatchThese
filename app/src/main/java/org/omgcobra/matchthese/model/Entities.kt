@@ -2,6 +2,7 @@ package org.omgcobra.matchthese.model
 
 import androidx.room.*
 import java.io.Serializable
+import java.math.BigDecimal
 
 abstract class AbstractEntity<T: AbstractEntity<T>>(@PrimaryKey(autoGenerate = true) var id: Long): Serializable
 abstract class NamedEntity<T: NamedEntity<T>>: AbstractEntity<T>(0L), Comparable<T> {
@@ -16,12 +17,14 @@ abstract class CompositeNamedListEntity<T: NamedEntity<T>, L: AbstractEntity<L>>
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
 data class Recipe(override var name: String): NamedEntity<Recipe>() {
+    var onShoppingList = false
     override fun compareTo(other: Recipe) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }
 
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
 data class Ingredient(override var name: String): NamedEntity<Ingredient>() {
+    var inPantry = false
     override fun compareTo(other: Ingredient) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }
@@ -44,7 +47,8 @@ data class Ingredient(override var name: String): NamedEntity<Ingredient>() {
 data class RecipeIngredientJoin(
         @Embedded(prefix = "recipe") var recipe: Recipe,
         @Embedded(prefix = "ingredient") var ingredient: Ingredient?,
-        var amount: String
+        var amount: BigDecimal,
+        var unit: String
 ): AbstractEntity<RecipeIngredientJoin>(0L)
 
 class RecipeWithIngredients(entity: Recipe): CompositeNamedListEntity<Recipe, Ingredient>(entity) {

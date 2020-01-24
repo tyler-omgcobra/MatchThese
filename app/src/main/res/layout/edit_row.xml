@@ -13,22 +13,33 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/name"
-        app:layout_constraintEnd_toStartOf="@+id/text_view"
+        app:layout_constraintEnd_toStartOf="@+id/number_view"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <EditText
-        android:id="@+id/text_view"
+        android:id="@+id/number_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/amount"
-        android:inputType="text"
+        android:inputType="numberDecimal"
+        android:hint="@string/number"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/unit_auto_complete"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/auto_complete_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <AutoCompleteTextView
+        android:id="@+id/unit_auto_complete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+        android:hint="@string/unit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/auto_complete_text"
+        app:layout_constraintStart_toEndOf="@id/number_view"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

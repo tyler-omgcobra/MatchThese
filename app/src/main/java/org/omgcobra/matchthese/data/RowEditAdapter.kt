@@ -1,6 +1,8 @@
 package org.omgcobra.matchthese.data
 
 import android.content.Context
+import android.icu.util.MeasureUnit
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +20,19 @@ import org.omgcobra.matchthese.model.Ingredient
 import org.omgcobra.matchthese.model.NamedEntity
 import org.omgcobra.matchthese.model.Recipe
 import org.omgcobra.matchthese.model.RecipeIngredientJoin
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 abstract class RowEditAdapter<L: NamedEntity<L>>(internal val context: Context, private val entityAdapter: ArrayAdapter<L>) : RecyclerView.Adapter<RowEditAdapter.RowViewHolder>(), Swipable {
 
     abstract val hintId: Int
     var dataSet: ArrayList<RecipeIngredientJoin> = ArrayList()
     private val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val volumes = MeasureUnit.getAvailable("volume").map { it.subtype }
+    private val weights = MeasureUnit.getAvailable("mass").map { it.subtype }
+    private val unitAdapter = ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line, volumes + weights)
+    private val df = DecimalFormat("#,###.#####")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
         0 -> RowAddViewHolder(inflater.inflate(R.layout.add_row, parent, false))
@@ -44,9 +53,19 @@ abstract class RowEditAdapter<L: NamedEntity<L>>(internal val context: Context, 
     override fun onBindViewHolder(holder: RowViewHolder, position: Int) {
         when (holder) {
             is RowEditViewHolder -> {
+                holder.unitAutoComplete.setAdapter(unitAdapter)
+                holder.unitAutoComplete.threshold = 1
+
                 val listEntity = dataSet[position]
-                holder.amountEditText.setText(listEntity.amount)
-                holder.amountEditText.doAfterTextChanged { listEntity.amount = it.toString() }
+                holder.amountEditText.setText(df.format(listEntity.amount))
+                holder.unitAutoComplete.setText(listEntity.unit)
+                val action: (Editable?) -> Unit = {
+                    val numText = holder.amountEditText.text.toString()
+                    listEntity.amount = if (numText.isNotEmpty()) BigDecimal(numText).setScale(5, RoundingMode.HALF_UP) else BigDecimal.ONE
+                    listEntity.unit = holder.unitAutoComplete.text.toString()
+                }
+                holder.amountEditText.doAfterTextChanged(action)
+                holder.unitAutoComplete.doAfterTextChanged(action)
 
                 bindAutoComplete(holder, listEntity)
                 holder.autoCompleteView.setAdapter(entityAdapter)
@@ -55,7 +74,7 @@ abstract class RowEditAdapter<L: NamedEntity<L>>(internal val context: Context, 
             }
             is RowAddViewHolder -> {
                 holder.addRow.setOnClickListener{
-                    dataSet.add(RecipeIngredientJoin(Recipe(""), Ingredient(""), ""))
+                    dataSet.add(RecipeIngredientJoin(Recipe(""), Ingredient(""), BigDecimal.ZERO, ""))
                     notifyItemInserted(holder.adapterPosition)
                 }
             }
@@ -80,7 +99,8 @@ abstract class RowEditAdapter<L: NamedEntity<L>>(internal val context: Context, 
 
     class RowEditViewHolder(itemView: View): RowViewHolder(itemView) {
         val autoCompleteView: AutoCompleteTextView = itemView.findViewById(R.id.auto_complete_text)
-        val amountEditText: EditText = itemView.findViewById(R.id.text_view)
+        val amountEditText: EditText = itemView.findViewById(R.id.number_view)
+        val unitAutoComplete: AutoCompleteTextView = itemView.findViewById(R.id.unit_auto_complete)
     }
 
     class RowAddViewHolder(itemView: View): RowViewHolder(itemView) {

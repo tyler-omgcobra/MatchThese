@@ -18,4 +18,7 @@ interface IngredientDao: AbstractDao<Ingredient> {
 
     @Query("SELECT * FROM Ingredient WHERE name = :name")
     fun getByName(name: String): Ingredient?
+
+    @Query("SELECT * FROM Ingredient WHERE inPantry = 1")
+    fun getPantry(): LiveData<List<Ingredient>>
 }
