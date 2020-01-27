@@ -31,4 +31,9 @@
         android:id="@+id/ingredientEditFragment"
         android:name="org.omgcobra.matchthese.fragments.ingredient.IngredientEditFragment"
         android:label="@string/ingredient_edit_title" />
+    <fragment
+        android:id="@+id/pantryFragment"
+        android:name="org.omgcobra.matchthese.fragments.pantry.PantryFragment"
+        android:label="@string/pantry_title"
+        tools:layout="@layout/fragment_pantry_view" />
 </navigation>

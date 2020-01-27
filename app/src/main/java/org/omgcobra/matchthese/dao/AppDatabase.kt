@@ -7,10 +7,13 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import org.omgcobra.matchthese.model.*
+import org.omgcobra.matchthese.model.AbstractEntity
+import org.omgcobra.matchthese.model.Ingredient
+import org.omgcobra.matchthese.model.Recipe
+import org.omgcobra.matchthese.model.RecipeIngredientJoin
 import kotlin.reflect.KClass
 
-@Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 10)
+@Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 1)
 @TypeConverters(AppTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeDao(): RecipeDao
@@ -36,151 +39,10 @@ abstract class AppDatabase : RoomDatabase() {
                 .inMemoryDatabaseBuilder(context, AppDatabase::class.java)
                 .build()
 
-        private val migrations = arrayOf(
-                object : DatabaseMigration(1, 2) {
+        private val migrations: Array<Migration> = arrayOf(
+                object: DatabaseMigration(1, 2) {
                     override fun migrate(database: SupportSQLiteDatabase) {
-                        recreateTable("ItemTagJoin", """
-                            CREATE TABLE IF NOT EXISTS ItemTagJoin(
-                                `tagid` INTEGER,
-                                `tagname` TEXT,
-                                `itemid` INTEGER NOT NULL,
-                                `itemname` TEXT NOT NULL,
-                                PRIMARY KEY(`itemid`),
-                                FOREIGN KEY(`tagid`) REFERENCES `Tag`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
-                                FOREIGN KEY(`itemid`) REFERENCES `Item`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
-                            )
-                        """, "tagid, tagname, itemid, itemname", database)
-                    }
-                },
-                object : DatabaseMigration(2, 3) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("CREATE UNIQUE INDEX `index_Item_id_name` ON `Item` (`id`, `name`)")
-                        database.execSQL("CREATE UNIQUE INDEX `index_Tag_id_name` ON `Tag` (`id`, `name`)")
-                        recreateTable("ItemTagJoin", """
-                            CREATE TABLE IF NOT EXISTS ItemTagJoin(
-                                `id` INTEGER NOT NULL,
-                                `tagname` TEXT,
-                                `tagid` INTEGER,
-                                `itemname` TEXT NOT NULL,
-                                `itemid` INTEGER NOT NULL,
-                                PRIMARY KEY(`itemid`),
-                                FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                                FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                            )
-                        """, "tagid, tagname, itemid, itemname", database)
-                    }
-                },
-                object : DatabaseMigration(3, 4) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        recreateTable("ItemTagJoin", """
-                            CREATE TABLE IF NOT EXISTS ItemTagJoin(
-                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                `tagname` TEXT,
-                                `tagid` INTEGER,
-                                `itemname` TEXT NOT NULL,
-                                `itemid` INTEGER NOT NULL,
-                                FOREIGN KEY(`tagid`, `tagname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                                FOREIGN KEY(`itemid`, `itemname`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                            )
-                        """, "tagid, tagname, itemid, itemname", database)
-                    }
-                },
-                object : DatabaseMigration(4, 5) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_itemid_itemname ON ItemTagJoin(itemid, itemname)")
-                        database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_tagid_tagname ON ItemTagJoin(tagid, tagname)")
-                    }
-                },
-                object : DatabaseMigration(5, 6) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("DROP INDEX index_ItemTagJoin_itemid_itemname")
-                        database.execSQL("DROP INDEX index_ItemTagJoin_tagid_tagname")
-                        database.execSQL("CREATE UNIQUE INDEX index_ItemTagJoin_itemid_itemname_tagid_tagname ON ItemTagJoin(itemid, itemname, tagid, tagname)")
-                    }
-                },
-                object : DatabaseMigration(6, 7) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("""
-                            CREATE TABLE IF NOT EXISTS RecipeIngredientJoin(
-                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                `ingredientname` TEXT,
-                                `ingredientid` INTEGER,
-                                `recipename` TEXT NOT NULL,
-                                `recipeid` INTEGER NOT NULL,
-                                FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Tag`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                                FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Item`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                            )
-                        """)
-                        database.execSQL("CREATE UNIQUE INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname ON RecipeIngredientJoin(recipeid, recipename, ingredientid, ingredientname)")
-                        database.execSQL("""
-                            INSERT INTO RecipeIngredientJoin(ingredientname, ingredientid, recipename, recipeid)
-                            SELECT itemname, itemid, tagname, tagid
-                            FROM ItemTagJoin
-                        """)
-                        database.execSQL("ALTER TABLE Item RENAME TO Recipe")
-                        database.execSQL("ALTER TABLE Tag RENAME TO Ingredient")
-                        database.execSQL("DROP TABLE ItemTagJoin")
-                    }
-                },
-                object : DatabaseMigration(7, 8) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("ALTER TABLE RecipeIngredientJoin ADD COLUMN `amount` TEXT NOT NULL DEFAULT ''")
-                    }
-                },
-                object : DatabaseMigration(8, 9) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("ALTER TABLE RecipeIngredientJoin RENAME TO RecipeIngredientJoinOld")
-                        database.execSQL("DROP INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname")
-                        database.execSQL("""
-                            CREATE TABLE IF NOT EXISTS RecipeIngredientJoin(
-                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                `ingredientname` TEXT,
-                                `ingredientid` INTEGER,
-                                `recipename` TEXT NOT NULL,
-                                `recipeid` INTEGER NOT NULL,
-                                `amount` DOUBLE NOT NULL DEFAULT 1,
-                                `unit` TEXT NOT NULL DEFAULT '',
-                                FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                                FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                            )
-                        """)
-                        database.execSQL("CREATE UNIQUE INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname ON RecipeIngredientJoin(recipeid, recipename, ingredientid, ingredientname)")
-                        database.execSQL("""
-                            INSERT INTO RecipeIngredientJoin(ingredientname, ingredientid, recipename, recipeid, amount, unit)
-                            SELECT ingredientname, ingredientid, recipename, recipeid, cast(amount as decimal), amount
-                            FROM RecipeIngredientJoinOld
-                        """)
-                        database.execSQL("DROP TABLE RecipeIngredientJoinOld")
-                    }
-                },
-                object : DatabaseMigration(9, 10) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        database.execSQL("ALTER TABLE Recipe ADD COLUMN `onShoppingList` INTEGER NOT NULL DEFAULT 0")
-                        database.execSQL("ALTER TABLE Ingredient ADD COLUMN `inPantry` INTEGER NOT NULL DEFAULT 0")
-                        database.execSQL("ALTER TABLE RecipeIngredientJoin RENAME TO RecipeIngredientJoinOld")
-                        database.execSQL("DROP INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname")
-                        database.execSQL("""
-                            CREATE TABLE IF NOT EXISTS RecipeIngredientJoin(
-                                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                                `ingredientname` TEXT,
-                                `ingredientid` INTEGER,
-                                `ingredientinPantry` INTEGER,
-                                `recipename` TEXT NOT NULL,
-                                `recipeid` INTEGER NOT NULL,
-                                `recipeonShoppingList` INTEGER NOT NULL,
-                                `amount` DOUBLE NOT NULL DEFAULT 1,
-                                `unit` TEXT NOT NULL DEFAULT '',
-                                FOREIGN KEY(`ingredientid`, `ingredientname`) REFERENCES `Ingredient`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE ,
-                                FOREIGN KEY(`recipeid`, `recipename`) REFERENCES `Recipe`(`id`, `name`) ON UPDATE CASCADE ON DELETE CASCADE
-                            )
-                        """)
-                        database.execSQL("CREATE UNIQUE INDEX index_RecipeIngredientJoin_recipeid_recipename_ingredientid_ingredientname ON RecipeIngredientJoin(recipeid, recipename, ingredientid, ingredientname)")
-                        database.execSQL("""
-                            INSERT INTO RecipeIngredientJoin(ingredientname, ingredientid, ingredientinPantry, recipename, recipeid, recipeonShoppingList, amount, unit)
-                            SELECT ingredientname, ingredientid, 0, recipename, recipeid, 0, cast(amount as decimal), amount
-                            FROM RecipeIngredientJoinOld
-                        """)
-                        database.execSQL("DROP TABLE RecipeIngredientJoinOld")
+                        // TODO stub when I need to migrate
                     }
                 }
         )

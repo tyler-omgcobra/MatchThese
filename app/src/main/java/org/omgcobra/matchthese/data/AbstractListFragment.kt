@@ -2,15 +2,13 @@ package org.omgcobra.matchthese.data
 
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
-import org.omgcobra.matchthese.model.CompositeNamedListEntity
-import org.omgcobra.matchthese.model.NamedEntity
 
-abstract class AbstractListFragment<E: NamedEntity<E>, L: NamedEntity<L>, A: CompositeListEntityAdapter<E, L>>: Fragment() {
-    protected val itemList = ArrayList<CompositeNamedListEntity<E, L>>()
+abstract class AbstractListFragment<E: Comparable<E>, A: AbstractListEntityAdapter<E, *>>: Fragment() {
+    protected val itemList = ArrayList<E>()
     protected abstract var adapter: A
     protected abstract var itemTouchHelper: ItemTouchHelper
 
-    protected fun setListData(newList: List<CompositeNamedListEntity<E, L>>) {
+    protected fun setListData(newList: List<E>) {
         itemList.clear()
         itemList.addAll(newList)
 

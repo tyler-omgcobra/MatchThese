@@ -1,9 +1,9 @@
-package org.omgcobra.matchthese.fragments.ingredient
+package org.omgcobra.matchthese.fragments.pantry
+
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -13,28 +13,21 @@ import androidx.recyclerview.widget.RecyclerView
 import org.omgcobra.matchthese.R
 import org.omgcobra.matchthese.data.AbstractListFragment
 import org.omgcobra.matchthese.fragments.SwipeToDeleteCallback
-import org.omgcobra.matchthese.model.CompositeNamedListEntity
 import org.omgcobra.matchthese.model.Ingredient
-import org.omgcobra.matchthese.model.Recipe
 
-/**
- * A simple [Fragment] subclass.
- *
- */
-class IngredientWithRecipesFragment : AbstractListFragment<CompositeNamedListEntity<Ingredient, Recipe>, IngredientWithRecipesAdapter>() {
-    private val viewModel: IngredientWithRecipesViewModel by viewModels()
-    override lateinit var adapter: IngredientWithRecipesAdapter
+class PantryFragment : AbstractListFragment<Ingredient, PantryAdapter>() {
+    private val viewModel: PantryViewModel by viewModels()
+    override lateinit var adapter: PantryAdapter
     override lateinit var itemTouchHelper: ItemTouchHelper
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
-        val rootView = inflater.inflate(R.layout.fragment_ingredients_view, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_pantry_view, container, false)
         val context = rootView.context
-        val recyclerView = rootView.findViewById<RecyclerView>(R.id.ingredient_list)
+        val recyclerView = rootView.findViewById<RecyclerView>(R.id.pantry_list)
+
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
-        adapter = IngredientWithRecipesAdapter(context)
+        adapter = PantryAdapter(context)
         setListData(itemList)
         recyclerView.adapter = adapter
 
@@ -47,6 +40,6 @@ class IngredientWithRecipesFragment : AbstractListFragment<CompositeNamedListEnt
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        viewModel.getIngredientsWithRecipesList().observe(viewLifecycleOwner, Observer { setListData(it) })
+        viewModel.getPantryList().observe(viewLifecycleOwner, Observer { setListData(it) })
     }
 }

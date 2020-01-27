@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(),
         when (menuItem.itemId) {
             R.id.menu_recipes -> navController.navigate(R.id.recipeWithIngredientsFragment)
             R.id.menu_ingredients -> navController.navigate(R.id.ingredientWithRecipesFragment)
+            R.id.menu_pantry -> navController.navigate(R.id.pantryFragment)
         }
 
         return true
@@ -96,8 +97,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun updateListData() {
         listOf(
-                supportFragmentManager.findFragmentById(R.id.recipeWithIngredientsFragment) as AbstractListFragment<*, *, *>?,
-                supportFragmentManager.findFragmentById(R.id.ingredientWithRecipesFragment) as AbstractListFragment<*, *, *>?
+                supportFragmentManager.findFragmentById(R.id.recipeWithIngredientsFragment) as AbstractListFragment<*, *>?,
+                supportFragmentManager.findFragmentById(R.id.ingredientWithRecipesFragment) as AbstractListFragment<*, *>?
         ).forEach { it?.refreshListData() }
     }
 }

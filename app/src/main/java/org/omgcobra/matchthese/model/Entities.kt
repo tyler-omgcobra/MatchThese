@@ -25,6 +25,8 @@ data class Recipe(override var name: String): NamedEntity<Recipe>() {
 @Entity(indices = [Index(value = ["id", "name"], unique = true)])
 data class Ingredient(override var name: String): NamedEntity<Ingredient>() {
     var inPantry = false
+    var pantryAmount: Double? = null
+    var pantryUOM: String? = null
     override fun compareTo(other: Ingredient) = this.name.compareTo(other.name, true)
     override fun toString() = name
 }

@@ -94,7 +94,7 @@ class RecipeBehaviorTest {
         onView(mainText)
                 .check(matches(isDisplayed()))
 
-        onView(allOf(withId(R.id.sub_text), withText(recipe), withParent(withChild(mainText))))
+        onView(allOf(withId(R.id.sub_text), withText(recipe), withParent(withChild(withChild(mainText)))))
                 .check(matches(isDisplayed()))
     }
 

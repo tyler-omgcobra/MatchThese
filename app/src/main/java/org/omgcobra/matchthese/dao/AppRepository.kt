@@ -8,12 +8,15 @@ import java.math.BigDecimal
 class AppRepository {
     companion object {
         val db = MatchTheseApplication.getDB()
+        private val ingredientDao = db.ingredientDao()
         private val recipeIngredientCompositeDao = db.recipeIngredientCompositeDao()
         private val allRecipesWithIngredients = recipeIngredientCompositeDao.allRecipesWithIngredients()
         private val allIngredientsWithRecipes = recipeIngredientCompositeDao.allIngredientsWithRecipes()
+        private val allPantryItems = ingredientDao.getPantry()
 
         fun getRecipesWithIngredients() = allRecipesWithIngredients
         fun getIngredientsWithRecipes() = allIngredientsWithRecipes
+        fun getPantry() = allPantryItems
         fun ensureIngredientInRecipe(recipe: CompositeNamedListEntity<Recipe, Ingredient>, ingredientName: String, amount: BigDecimal, unit: String) = IngredientRecipeTask(db.recipeIngredientJoinDao(), db.ingredientDao(), ingredientName, amount, unit).execute(recipe)
         fun removeIngredientFromRecipe(recipe: CompositeNamedListEntity<Recipe, Ingredient>, ingredientName: String) = RemoveIngredientTask(db.recipeIngredientJoinDao(), db.ingredientDao(), ingredientName).execute(recipe)
         fun ensureRecipeHasIngredient(ingredient: CompositeNamedListEntity<Ingredient, Recipe>, recipeName: String, amount: BigDecimal, unit: String) = RecipeIngredientTask(db.recipeIngredientJoinDao(), db.recipeDao(), recipeName, amount, unit).execute(ingredient)
