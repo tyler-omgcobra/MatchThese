@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(),
         navController = Navigation.findNavController(this, R.id.nav_host_fragment)
 
         val appBarConfiguration = AppBarConfiguration(
-                setOf(R.id.recipeWithIngredientsFragment, R.id.ingredientWithRecipesFragment),
+                setOf(R.id.recipeWithIngredientsFragment, R.id.ingredientWithRecipesFragment, R.id.pantryFragment),
                 drawerLayout
         )
 
@@ -62,15 +62,19 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
-        menuItem.isChecked = true
-
         drawerLayout.closeDrawers()
 
-        when (menuItem.itemId) {
-            R.id.menu_recipes -> navController.navigate(R.id.recipeWithIngredientsFragment)
-            R.id.menu_ingredients -> navController.navigate(R.id.ingredientWithRecipesFragment)
-            R.id.menu_pantry -> navController.navigate(R.id.pantryFragment)
+        val dest = when (menuItem.itemId) {
+            R.id.menu_recipes -> R.id.recipeWithIngredientsFragment
+            R.id.menu_ingredients -> R.id.ingredientWithRecipesFragment
+            R.id.menu_pantry -> R.id.pantryFragment
+            else -> return false
         }
+
+        navController.popBackStack(R.id.nav_graph, false)
+        navController.navigate(dest)
+
+        menuItem.isChecked = true
 
         return true
     }
