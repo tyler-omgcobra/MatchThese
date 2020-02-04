@@ -6,7 +6,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -16,6 +15,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import org.omgcobra.matchthese.data.AbstractListFragment
 import org.omgcobra.matchthese.data.CompositeListEntityEditFragment
+import org.omgcobra.matchthese.fragments.DrawerCloseOnBackListener
+import org.omgcobra.matchthese.fragments.ExitToastCallback
 
 class MainActivity : AppCompatActivity(),
         NavigationView.OnNavigationItemSelectedListener,
@@ -59,6 +60,10 @@ class MainActivity : AppCompatActivity(),
         toolbar.setupWithNavController(navController, appBarConfiguration)
 
         navigationView.setNavigationItemSelectedListener(this)
+
+        drawerLayout.addDrawerListener(DrawerCloseOnBackListener(onBackPressedDispatcher, drawerLayout))
+
+        onBackPressedDispatcher.addCallback(this, ExitToastCallback(baseContext))
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -81,14 +86,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun onSupportNavigateUp(): Boolean {
         return NavigationUI.navigateUp(navController, drawerLayout)
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
     }
 
     fun onAddRecipeBtnClick(view: View) {

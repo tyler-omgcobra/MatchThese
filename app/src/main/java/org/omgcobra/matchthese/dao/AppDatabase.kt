@@ -7,11 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import org.omgcobra.matchthese.model.AbstractEntity
-import org.omgcobra.matchthese.model.Ingredient
-import org.omgcobra.matchthese.model.Recipe
-import org.omgcobra.matchthese.model.RecipeIngredientJoin
-import kotlin.reflect.KClass
+import org.omgcobra.matchthese.model.*
 
 @Database(entities = [Recipe::class, RecipeIngredientJoin::class, Ingredient::class], version = 1)
 @TypeConverters(AppTypeConverters::class)
@@ -20,8 +16,15 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun recipeIngredientCompositeDao(): RecipeIngredientCompositeDao
     abstract fun ingredientDao(): IngredientDao
     abstract fun recipeIngredientJoinDao(): RecipeIngredientJoinDao
-    fun <T : AbstractEntity<T>> dao(klass: KClass<T>): AbstractDao<T> {
-        return (when (klass) {
+    inline fun <reified T : NamedEntity<T>> namedDao(): NamedDao<T> {
+        return (when (T::class) {
+            Recipe::class -> recipeDao()
+            Ingredient::class -> ingredientDao()
+            else -> throw IllegalArgumentException()
+        }) as NamedDao<T>
+    }
+    inline fun <reified T: AbstractEntity<T>> dao(): AbstractDao<T> {
+        return (when (T::class) {
             Recipe::class -> recipeDao()
             Ingredient::class -> ingredientDao()
             RecipeIngredientJoin::class -> recipeIngredientJoinDao()

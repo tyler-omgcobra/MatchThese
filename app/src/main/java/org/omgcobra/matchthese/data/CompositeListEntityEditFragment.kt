@@ -6,6 +6,7 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -94,6 +95,7 @@ abstract class CompositeListEntityEditFragment<E: NamedEntity<E>, L: NamedEntity
 
         try {
             entitySavedListener = context as ListEntitySavedListener
+            requireActivity().onBackPressedDispatcher.addCallback(this) { saveItem() }
         } catch (ex: ClassCastException) {
             throw ClassCastException("%s must implement ListEntitySavedListener".format(context.toString()))
         }

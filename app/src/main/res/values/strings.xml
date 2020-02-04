@@ -27,4 +27,5 @@
     <string name="shopping_list_title">Shopping List</string>
     <string name="pantry_title">Pantry</string>
     <string name="todo">TODO</string>
+    <string name="exit_toast">Press BACK again to exit</string>
 </resources>

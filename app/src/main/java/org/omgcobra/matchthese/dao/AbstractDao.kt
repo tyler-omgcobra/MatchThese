@@ -1,8 +1,12 @@
 package org.omgcobra.matchthese.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.*
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
 import org.omgcobra.matchthese.model.AbstractEntity
+import org.omgcobra.matchthese.model.NamedEntity
 
 interface AbstractDao<T: AbstractEntity<T>> {
 
@@ -23,4 +27,8 @@ interface AbstractDao<T: AbstractEntity<T>> {
     fun delete(vararg items: T)
 
     fun deleteAll()
+}
+
+interface NamedDao<T: NamedEntity<T>>: AbstractDao<T> {
+    fun getByName(name: String): T?
 }

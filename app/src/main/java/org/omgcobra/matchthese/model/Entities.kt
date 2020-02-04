@@ -8,6 +8,15 @@ abstract class AbstractEntity<T: AbstractEntity<T>>(@PrimaryKey(autoGenerate = t
 abstract class NamedEntity<T: NamedEntity<T>>: AbstractEntity<T>(0L), Comparable<T> {
     abstract var name: String
     override fun compareTo(other: T) = this.name.compareTo(other.name, true)
+    companion object {
+        inline fun <reified T: NamedEntity<T>> create(name: String): T {
+            return (when (T::class) {
+                Recipe::class -> Recipe(name)
+                Ingredient::class -> Ingredient(name)
+                else -> throw IllegalArgumentException()
+            }) as T
+        }
+    }
 }
 abstract class CompositeNamedListEntity<T: NamedEntity<T>, L: AbstractEntity<L>>(@Embedded val entity: T): Serializable, Comparable<CompositeNamedListEntity<T, L>> {
     abstract var joinList: List<RecipeIngredientJoin>
